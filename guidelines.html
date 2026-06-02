@@ -6,9 +6,9 @@
     <title>Patch Perfect AI - Treatment Guidelines</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans">
+<body class="bg-stone-50 text-stone-800 font-sans pb-20 sm:pb-0">
 
-    <nav class="bg-red-800 text-white shadow-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <nav class="hidden sm:flex bg-red-800 text-white shadow-md px-6 py-4 justify-between items-center gap-4">
         <div class="flex items-center space-x-3">
             <span class="text-2xl">🩹</span>
             <h1 class="text-xl font-bold tracking-wide">Patch Perfect AI <span class="text-xs bg-red-950 px-2 py-1 rounded text-red-200 ml-1">Health Worker Mode</span></h1>
@@ -19,40 +19,59 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-6 space-y-6">
+    <div class="sm:hidden bg-red-800 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center gap-2">
+            <span class="text-xl">🩹</span>
+            <h1 class="font-bold text-base tracking-wide">Patch Perfect AI</h1>
+        </div>
+        <span class="text-[10px] bg-red-950 px-2 py-0.5 rounded font-mono text-red-200 uppercase">HW Mode</span>
+    </div>
+
+    <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 shadow-xl z-50 px-4 py-2 flex justify-around items-center">
+        <a href="index.html" class="flex flex-col items-center justify-center text-center w-20 py-1 text-stone-400 hover:text-stone-600 transition">
+            <span class="text-xl">📋</span>
+            <span class="text-[10px] mt-0.5 tracking-tight">Patients</span>
+        </a>
+        <a href="guidelines.html" class="flex flex-col items-center justify-center text-center w-20 py-1 text-red-800 font-semibold">
+            <span class="text-xl">🛡️</span>
+            <span class="text-[10px] mt-0.5 tracking-tight">Guidelines</span>
+        </a>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         
-        <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
-            <h2 class="text-xl font-bold text-stone-900">Clinical Protocol Guidance Center</h2>
-            <p class="text-xs text-stone-400 mt-1">Standardized medical instructions to aid primary treatment decisions following AI wound segmentation assessments.</p>
+        <div class="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h2 class="text-lg sm:text-xl font-bold text-stone-900">Clinical Protocol Guidance Center</h2>
+            <p class="text-[11px] sm:text-xs text-stone-400 mt-1">Standardized medical instructions to aid primary treatment decisions following AI wound segmentation assessments.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:grid-cols-1 lg:gap-6">
             
             <div class="space-y-2">
-                <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block px-1">Select Wound Profile</span>
-                <div id="protocolMenu" class="space-y-1">
+                <span class="text-[11px] sm:text-xs font-bold text-stone-400 uppercase tracking-wider block px-1">Select Wound Profile</span>
+                <div id="protocolMenu" class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 lg:flex lg:flex-col lg:space-y-1">
                     </div>
             </div>
 
-            <div class="lg:col-span-3 bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+            <div class="lg:col-span-3 bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-sm space-y-4 sm:space-y-6">
                 
-                <div class="flex justify-between items-start border-b border-stone-100 pb-4">
+                <div class="flex justify-between items-start border-b border-stone-100 pb-4 gap-4">
                     <div>
-                        <h3 id="guidelineTitle" class="text-2xl font-bold text-stone-900">--</h3>
-                        <p id="guidelineDesc" class="text-xs text-stone-400 mt-0.5">--</p>
+                        <h3 id="guidelineTitle" class="text-xl sm:text-2xl font-bold text-stone-900">--</h3>
+                        <p id="guidelineDesc" class="text-[11px] sm:text-xs text-stone-400 mt-0.5">--</p>
                     </div>
-                    <span id="riskBadge" class="text-xs font-bold px-3 py-1 rounded-md border">--</span>
+                    <span id="riskBadge" class="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md border whitespace-nowrap">--</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
-                        <span class="text-lg">🧼</span>
+                        <span class="text-base sm:text-lg">🧼</span>
                         <h4 class="font-bold text-stone-900 text-sm">1. Cleansing & Debridement</h4>
                         <p id="cleansingText" class="text-xs text-stone-600 leading-relaxed">--</p>
                     </div>
 
                     <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
-                        <span class="text-lg">🛡️</span>
+                        <span class="text-base sm:text-lg">🛡️</span>
                         <h4 class="font-bold text-stone-900 text-sm">2. Preferred Dressing Selection</h4>
                         <p id="dressingText" class="text-xs text-stone-600 leading-relaxed">--</p>
                     </div>
@@ -60,7 +79,7 @@
 
                 <div class="bg-red-50/40 p-4 rounded-xl border border-red-200/60 space-y-2">
                     <div class="flex items-center gap-2 text-red-800 font-bold text-sm">
-                        <span>⚠️</span>
+                        <span class="text-base">⚠️</span>
                         <h4>Clinical Red Flags (Immediate Medical Escalation)</h4>
                     </div>
                     <p id="redFlagsText" class="text-xs text-red-950/80 leading-relaxed font-medium">--</p>
@@ -114,8 +133,8 @@
                 const btn = document.createElement('button');
                 btn.id = `btn-${item.id}`;
                 btn.className = index === 0 
-                    ? "w-full text-left px-4 py-3 rounded-xl font-bold text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs"
-                    : "w-full text-left px-4 py-3 rounded-xl font-medium text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
+                    ? "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs"
+                    : "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-medium text-[11px] sm:text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
                 
                 btn.innerText = item.name;
                 btn.setAttribute('onclick', `switchActiveProtocol('${item.id}')`);
@@ -131,10 +150,10 @@
             clinicalProtocols.forEach(item => {
                 const element = document.getElementById(`btn-${item.id}`);
                 if (item.id === targetId) {
-                    element.className = "w-full text-left px-4 py-3 rounded-xl font-bold text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs";
+                    element.className = "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs";
                     loadGuidelinesData(item);
                 } else {
-                    element.className = "w-full text-left px-4 py-3 rounded-xl font-medium text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
+                    element.className = "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-medium text-[11px] sm:text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
                 }
             });
         }
@@ -146,7 +165,7 @@
             
             const badge = document.getElementById('riskBadge');
             badge.innerText = protocolObj.risk;
-            badge.className = `text-xs font-bold px-3 py-1 rounded-md border ${protocolObj.riskClass}`;
+            badge.className = `text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md border ${protocolObj.riskClass}`;
 
             document.getElementById('cleansingText').innerText = protocolObj.cleansing;
             document.getElementById('dressingText').innerText = protocolObj.dressing;
