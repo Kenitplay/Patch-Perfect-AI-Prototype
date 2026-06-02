@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch Perfect AI - Community Health Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+
+    <nav class="bg-red-800 text-white shadow-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">🩹</span>
+            <h1 class="text-xl font-bold tracking-wide">Patch Perfect AI <span class="text-xs bg-red-950 px-2 py-1 rounded text-red-200 ml-1">Health Worker Mode</span></h1>
+        </div>
+        <div class="space-x-1 sm:space-x-4 text-sm font-medium flex">
+            <a href="index.html" class="bg-red-950 px-3 py-2 rounded-md font-semibold transition">Patient List & History</a>
+            <a href="guidelines.html" class="hover:bg-red-700 px-3 py-2 rounded-md transition text-stone-200">Treatment Guidelines</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6">
+        
+        <div id="view-dashboard" class="space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-stone-900">Step 1: Select a Patient</h2>
+                            <span id="totalPatientBadge" class="bg-stone-100 text-stone-700 text-xs font-bold px-2.5 py-1 rounded-full border border-stone-200">Total Patients: --</span>
+                        </div>
+                        <p class="text-sm text-stone-500">Find and click on a patient to open their historical records folder.</p>
+                    </div>
+                    <div class="relative w-full sm:w-72">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-stone-400">🔍</span>
+                        <input type="text" id="patientSearch" onkeyup="filterPatients()" placeholder="Search patient name or ID..." class="w-full pl-9 pr-4 py-2 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:bg-white transition">
+                    </div>
+                </div>
+                
+                <div id="patientGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                
+                <div id="emptySearchState" class="hidden text-center py-6 text-sm text-stone-400 bg-stone-50 rounded-lg border border-dashed border-stone-200">No patient matches your search query.</div>
+
+                <div id="paginationControls" class="flex items-center justify-between border-t border-stone-100 pt-4 text-xs font-medium text-stone-600">
+                    <span id="paginationInfo">Showing 1 to 3 of 3 records</span>
+                    <div class="flex gap-2">
+                        <button id="prevPageBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded border border-stone-300 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white transition">Previous</button>
+                        <button id="nextPageBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded border border-stone-300 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:hover:bg-white transition">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 space-y-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-b border-stone-100 pb-4">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-stone-400">Step 2: Review Wound History</span>
+                        <h2 id="selected-patient-name" class="text-2xl font-bold text-stone-900">--</h2>
+                        <p id="selected-patient-meta" class="text-sm text-stone-500">--</p>
+                    </div>
+                    <div>
+                        <button id="scanWoundBtn" onclick="goToAnalysis()" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold px-5 py-3 rounded-lg text-sm shadow-md transition w-full justify-center">
+                            <span>📸</span> Scan New Picture for this Patient
+                        </button>
+                    </div>
+                </div>
+
+                <div id="historyDataBlock" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-2">
+                        <h4 class="font-bold text-stone-900 text-sm">Wound Severity Trend Chart</h4>
+                        <div class="h-56 relative bg-stone-50 p-2 rounded-xl border border-stone-100">
+                            <canvas id="progressionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-stone-900 text-sm">Latest Scan Results</h4>
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3 divide-y divide-stone-200/60">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-semibold text-stone-500">Severity Score</span>
+                                <span id="latest-status" class="font-bold px-2 py-0.5 rounded border">--</span>
+                            </div>
+                            <div class="pt-3">
+                                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Recommendation</span>
+                                <p id="latest-rec" class="text-sm font-semibold text-stone-900">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-stone-900 text-sm mb-3">Saved Pictures Tracking Timeline</h4>
+                    <div id="picture-timeline" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    <div id="emptyTimelineState" class="hidden text-center py-8 text-sm text-stone-400 bg-stone-50 rounded-lg border border-dashed border-stone-200">
+                        No previous scans logged for this patient. Click "Scan New Picture" to generate their first file entry.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const patientDataArray = [
+            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeClass: "text-red-800 bg-red-100", lastChecked: "Today", meta: "Condition: Diabetic Foot Ulcer | Barangay Health Unit Main", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe (7/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (3/10)", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate (5/10)", color: "text-amber-600", active: true }] },
+            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeClass: "text-emerald-800 bg-emerald-100", lastChecked: "3 Days Ago", meta: "Condition: Surgical Wound | Barangay Health Unit Main", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Mild (4/10)", color: "text-emerald-600" }, { date: "May 30, 2026", severity: "Mild (2/10)", color: "text-emerald-600", active: true }] },
+            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeClass: "text-emerald-800 bg-emerald-100", lastChecked: "1 Week Ago", meta: "Condition: Pressure Injury | Barangay Health Unit Main", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical (9/10)", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (4/10)", color: "text-emerald-600", active: true }] },
+            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeClass: "text-emerald-800 bg-emerald-100", lastChecked: "2 Days Ago", meta: "Condition: Venous Ulcer | Barangay Health Unit Main", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild (3/10)", color: "text-emerald-600", active: true }] },
+            { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeClass: "text-red-800 bg-red-100", lastChecked: "Yesterday", meta: "Condition: Thermal Burn | Barangay Health Unit Main", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe (8/10)", color: "text-red-700", active: true }] },
+            { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeClass: "text-blue-800 bg-blue-100", lastChecked: "Never Explored", meta: "Condition: Fresh Laceration Intake | Barangay Health Unit Main", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
+        ];
+
+        let currentPage = 1;
+        const itemsPerPage = 3;
+        let filteredPatientsList = [...patientDataArray];
+        let activeSelectedId = 1;
+        let currentChartInstance = null;
+
+        function renderPatientGrid() {
+            document.getElementById('totalPatientBadge').innerText = `Total Patients: ${patientDataArray.length}`;
+            const grid = document.getElementById('patientGrid');
+            grid.innerHTML = '';
+
+            if (filteredPatientsList.length === 0) {
+                document.getElementById('emptySearchState').classList.remove('hidden');
+                document.getElementById('paginationControls').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('emptySearchState').classList.add('hidden');
+            document.getElementById('paginationControls').classList.remove('hidden');
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPatientsList.length);
+            const paginatedItems = filteredPatientsList.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(patient => {
+                const isSelected = patient.id === activeSelectedId;
+                const card = document.createElement('div');
+                card.className = isSelected 
+                    ? "cursor-pointer p-4 rounded-xl border-2 border-red-600 bg-red-50/30 shadow-xs transition"
+                    : "cursor-pointer p-4 rounded-xl border border-stone-200 bg-white transition hover:border-red-400";
+                
+                card.setAttribute('onclick', `selectPatient(${patient.id})`);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold uppercase px-2 py-0.5 rounded ${patient.badgeClass}">${patient.badgeText}</span>
+                        <span class="text-xs text-stone-400">ID: #${patient.pId}</span>
+                    </div>
+                    <h3 class="font-bold text-stone-900 text-lg mt-2">${patient.name}</h3>
+                    <p class="text-xs text-stone-500 mt-1">${patient.condition}</p>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('paginationInfo').innerText = `Showing ${startIndex + 1} to ${endIndex} of ${filteredPatientsList.length} records`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = endIndex >= filteredPatientsList.length;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderPatientGrid();
+        }
+
+        function filterPatients() {
+            const query = document.getElementById('patientSearch').value.toLowerCase().trim();
+            filteredPatientsList = patientDataArray.filter(p => p.name.toLowerCase().includes(query) || p.pId.includes(query));
+            currentPage = 1;
+            renderPatientGrid();
+        }
+
+        function selectPatient(id) {
+            activeSelectedId = id;
+            const data = patientDataArray.find(p => p.id === id);
+            
+            document.getElementById('selected-patient-name').innerText = `${data.name}'s Record`;
+            document.getElementById('selected-patient-meta').innerText = data.meta;
+            
+            const historyBlock = document.getElementById('historyDataBlock');
+            const emptyTimeline = document.getElementById('emptyTimelineState');
+            const stripContainer = document.getElementById('picture-timeline');
+            
+            if (data.history.length === 0) {
+                historyBlock.classList.add('hidden');
+                emptyTimeline.classList.remove('hidden');
+                stripContainer.innerHTML = '';
+                document.getElementById('latest-status').innerText = "--";
+                document.getElementById('latest-rec').innerText = "No recommendation generated yet.";
+            } else {
+                historyBlock.classList.remove('hidden');
+                emptyTimeline.classList.add('hidden');
+                
+                const scoreElement = document.getElementById('latest-status');
+                scoreElement.innerText = `${data.latestScore} / 10`;
+                document.getElementById('latest-rec').innerText = data.recText;
+
+                stripContainer.innerHTML = '';
+                data.history.forEach((img, index) => {
+                    const block = document.createElement('div');
+                    block.className = img.active ? "border-2 border-red-500 rounded-lg overflow-hidden bg-red-50/20 relative" : "border border-stone-200 rounded-lg overflow-hidden bg-stone-50";
+                    block.innerHTML = (img.active ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-[9px] uppercase font-bold px-1 py-0.5 rounded">Latest</span>` : '') + `
+                        <div class="h-24 bg-red-950/80 flex items-center justify-center text-red-200 text-xs p-2 text-center font-mono">[ Picture ${index+1} ]</div>
+                        <div class="p-2.5 text-xs">
+                            <p class="font-bold text-stone-700">${img.date}</p>
+                            <p>Severity: <span class="${img.color} font-bold">${img.severity}</span></p>
+                        </div>`;
+                    stripContainer.appendChild(block);
+                });
+
+                if (currentChartInstance) { currentChartInstance.destroy(); }
+                const ctx = document.getElementById('progressionChart').getContext('2d');
+                currentChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{ label: 'Severity Level', data: data.scores, borderColor: '#991b1b', borderWidth: 2.5, fill: false, tension: 0.1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 10 } } }
+                });
+            }
+            renderPatientGrid();
+        }
+
+        function goToAnalysis() {
+            const currentPatient = patientDataArray.find(p => p.id === activeSelectedId);
+            window.location.href = `analysis.html?name=${encodeURIComponent(currentPatient.name)}`;
+        }
+
+        window.onload = () => { selectPatient(1); };
+    </script>
+</body>
+</html>

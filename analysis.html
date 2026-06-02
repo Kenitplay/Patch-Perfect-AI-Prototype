@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Wound Analysis Pipeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+
+    <!-- Redesigned Red Header Bar -->
+    <header class="bg-red-800 text-white p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🔬</span>
+                <h1 class="font-bold text-sm sm:text-base">Patch Perfect AI Analysis Engine</h1>
+            </div>
+            <a href="index.html" class="text-xs bg-red-950 hover:bg-red-900 px-3 py-1.5 rounded transition">← Cancel & Return Dashboard</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 mt-4 space-y-6">
+        
+        <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <span class="text-xs font-bold text-red-700 uppercase tracking-wider block">Active Pipeline Target</span>
+            <h2 id="patientNameDisplay" class="text-2xl font-bold text-stone-900 mt-0.5">Loading patient info...</h2>
+            <p class="text-xs text-stone-400 mt-1">Ready to receive and bind new imaging file telemetry into clinical history records.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 space-y-4">
+            <h3 class="text-lg font-bold text-stone-900">Step 1: Upload Wound Picture</h3>
+            
+            <div class="border-2 border-dashed border-stone-300 hover:border-red-600 rounded-xl p-8 text-center cursor-pointer bg-stone-50 transition flex flex-col items-center justify-center">
+                <span class="text-4xl mb-2">📸</span>
+                <p class="text-sm font-medium text-stone-700">Click to choose a file or drop a picture here</p>
+                <p class="text-xs text-stone-400 mt-1">Accepts mobile camera or high-res capture pictures</p>
+            </div>
+
+            <button id="runPipelineBtn" class="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-3 rounded-lg text-sm transition shadow-md">
+                Start AI Analysis
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 space-y-4">
+            <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                <h3 class="text-lg font-bold text-stone-900">Step 2: Analysis Result</h3>
+                <span id="statusBadge" class="px-2 py-1 bg-stone-100 text-stone-500 rounded text-xs font-medium">Waiting for Picture</span>
+            </div>
+
+            <div id="placeholderScreen" class="py-8 text-center text-stone-400 text-sm">
+                 Please trigger "Start AI Analysis" above to process input records.
+            </div>
+
+            <div id="outputPipeline" class="hidden divide-y divide-stone-100">
+                <div class="py-3 flex justify-between items-center text-sm">
+                    <span class="font-semibold text-stone-500">Wound Type</span>
+                    <span class="font-bold text-red-900 bg-red-50 px-3 py-1 rounded-md border border-red-100">Diabetic Ulcer</span>
+                </div>
+                <div class="py-3 flex justify-between items-center text-sm">
+                    <span class="font-semibold text-stone-500">Severity Level</span>
+                    <span class="font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-md border border-amber-100">Moderate</span>
+                </div>
+                <div class="py-3 flex justify-between items-center text-sm">
+                    <span class="font-semibold text-stone-500">Healing Status</span>
+                    <span class="font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-100">Improving</span>
+                </div>
+                <div class="py-4 bg-stone-50 p-4 rounded-xl mt-3 border border-stone-100">
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block mb-1">Recommendation</span>
+                    <p class="text-sm font-semibold text-stone-900">Daily monitoring advised</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Catch and verify data transfer query strings
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name');
+            
+            const displayField = document.getElementById('patientNameDisplay');
+            if (nameParam) {
+                displayField.innerText = `Scanning Wound For: ${decodeURIComponent(nameParam)}`;
+            } else {
+                displayField.innerText = "Scanning Wound For: Unknown Patient Prospect";
+            }
+        };
+
+        // Execution Pipeline Trigger Logic
+        document.getElementById('runPipelineBtn').addEventListener('click', () => {
+            const badge = document.getElementById('statusBadge');
+            badge.innerText = "Analyzing Picture Layers...";
+            badge.className = "px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-medium animate-pulse";
+            
+            setTimeout(() => {
+                document.getElementById('placeholderScreen').classList.add('hidden');
+                document.getElementById('outputPipeline').classList.remove('hidden');
+                badge.innerText = "Analysis Complete";
+                badge.className = "px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-medium";
+            }, 1000); 
+        });
+    </script>
+</body>
+</html>

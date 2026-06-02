@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch Perfect AI - Treatment Guidelines</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+
+    <nav class="bg-red-800 text-white shadow-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">🩹</span>
+            <h1 class="text-xl font-bold tracking-wide">Patch Perfect AI <span class="text-xs bg-red-950 px-2 py-1 rounded text-red-200 ml-1">Health Worker Mode</span></h1>
+        </div>
+        <div class="space-x-1 sm:space-x-4 text-sm font-medium flex">
+            <a href="index.html" class="hover:bg-red-700 px-3 py-2 rounded-md transition text-stone-200">Patient List & History</a>
+            <a href="guidelines.html" class="bg-red-950 px-3 py-2 rounded-md font-semibold transition">Treatment Guidelines</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 space-y-6">
+        
+        <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h2 class="text-xl font-bold text-stone-900">Clinical Protocol Guidance Center</h2>
+            <p class="text-xs text-stone-400 mt-1">Standardized medical instructions to aid primary treatment decisions following AI wound segmentation assessments.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block px-1">Select Wound Profile</span>
+                <div id="protocolMenu" class="space-y-1">
+                    </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                
+                <div class="flex justify-between items-start border-b border-stone-100 pb-4">
+                    <div>
+                        <h3 id="guidelineTitle" class="text-2xl font-bold text-stone-900">--</h3>
+                        <p id="guidelineDesc" class="text-xs text-stone-400 mt-0.5">--</p>
+                    </div>
+                    <span id="riskBadge" class="text-xs font-bold px-3 py-1 rounded-md border">--</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
+                        <span class="text-lg">🧼</span>
+                        <h4 class="font-bold text-stone-900 text-sm">1. Cleansing & Debridement</h4>
+                        <p id="cleansingText" class="text-xs text-stone-600 leading-relaxed">--</p>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
+                        <span class="text-lg">🛡️</span>
+                        <h4 class="font-bold text-stone-900 text-sm">2. Preferred Dressing Selection</h4>
+                        <p id="dressingText" class="text-xs text-stone-600 leading-relaxed">--</p>
+                    </div>
+                </div>
+
+                <div class="bg-red-50/40 p-4 rounded-xl border border-red-200/60 space-y-2">
+                    <div class="flex items-center gap-2 text-red-800 font-bold text-sm">
+                        <span>⚠️</span>
+                        <h4>Clinical Red Flags (Immediate Medical Escalation)</h4>
+                    </div>
+                    <p id="redFlagsText" class="text-xs text-red-950/80 leading-relaxed font-medium">--</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Clinical Treatment Database Structure Matching Core Application Profiles
+        const clinicalProtocols = [
+            {
+                id: "diabetic",
+                name: "Diabetic Foot Ulcer",
+                desc: "Focuses on maximizing offloading containment and moisture balance containment parameters.",
+                risk: "High Risk Profile",
+                riskClass: "bg-red-50 text-red-700 border-red-100",
+                cleansing: "Flush with sterile normal saline solution. Avoid aggressive mechanical scrubbing over exposed margins. Carefully remove calloused hyperkeratotic borders using sterile instruments if cleared by an attending supervisor.",
+                dressing: "Apply silver-infused hydrocolloids or calcium alginate options if exudate amounts test high. Maintain clean non-adhesive protective coverings to control peripheral tissue breakdown risks.",
+                flags: "Look for localized foul odors, spreading margins of active erythema exceeding 2cm from borders, sudden temperature changes over surrounding ankles, or bone exposure visible through tissue cracks."
+            },
+            {
+                id: "surgical",
+                name: "Surgical Wound",
+                desc: "Focuses on maintaining environmental incision line closure safety barriers.",
+                risk: "Standard Risk",
+                riskClass: "bg-stone-100 text-stone-700 border-stone-200",
+                cleansing: "Cleanse with mild liquid antiseptic soap or sterile saline wash solutions. Keep primary crusting structures undisturbed over healing perimeter staples.",
+                dressing: "Utilize transparent semi-permeable film dressings for low-exudate incisions. Switch out to dynamic vapor-permeable foam layers if clear fluid collecting risks increase over time.",
+                flags: "Active suture line dehiscence separation, thick purulent drainage collections, localized hard localized swelling, or systemic fever trends tracking upward past 38°C."
+            },
+            {
+                id: "pressure",
+                name: "Pressure Injury",
+                desc: "Focuses on structural pressure relief schedules and dead-space management packs.",
+                risk: "Moderate Risk",
+                riskClass: "bg-amber-50 text-amber-700 border-amber-100",
+                cleansing: "Wash through clean non-cytotoxic solutions. Do not clean structural surface spaces using harsh hydrogen peroxide compounds which stall underlying granulated cell progression cycles.",
+                dressing: "Apply hydrogel matrices over unexposed base beds to maintain functional cellular expansion environments. Protect edge rims with hydrocolloid border rings.",
+                flags: "Rapid tracking transitions revealing black necrotic slough layers, pocketed sinus track tunneling depths found upon probing, or surrounding skin fluctuation signals."
+            }
+        ];
+
+        // Dynamic Protocol Menu Generation Engine
+        function initProtocolMatrix() {
+            const menuContainer = document.getElementById('protocolMenu');
+            menuContainer.innerHTML = '';
+
+            clinicalProtocols.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.id = `btn-${item.id}`;
+                btn.className = index === 0 
+                    ? "w-full text-left px-4 py-3 rounded-xl font-bold text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs"
+                    : "w-full text-left px-4 py-3 rounded-xl font-medium text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
+                
+                btn.innerText = item.name;
+                btn.setAttribute('onclick', `switchActiveProtocol('${item.id}')`);
+                menuContainer.appendChild(btn);
+            });
+
+            // Initialize display with default active array element 
+            loadGuidelinesData(clinicalProtocols[0]);
+        }
+
+        // Handle Active Style Tab State Toggles
+        function switchActiveProtocol(targetId) {
+            clinicalProtocols.forEach(item => {
+                const element = document.getElementById(`btn-${item.id}`);
+                if (item.id === targetId) {
+                    element.className = "w-full text-left px-4 py-3 rounded-xl font-bold text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs";
+                    loadGuidelinesData(item);
+                } else {
+                    element.className = "w-full text-left px-4 py-3 rounded-xl font-medium text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
+                }
+            });
+        }
+
+        // Bind Active Database Details into Document Elements
+        function loadGuidelinesData(protocolObj) {
+            document.getElementById('guidelineTitle').innerText = protocolObj.name;
+            document.getElementById('guidelineDesc').innerText = protocolObj.desc;
+            
+            const badge = document.getElementById('riskBadge');
+            badge.innerText = protocolObj.risk;
+            badge.className = `text-xs font-bold px-3 py-1 rounded-md border ${protocolObj.riskClass}`;
+
+            document.getElementById('cleansingText').innerText = protocolObj.cleansing;
+            document.getElementById('dressingText').innerText = protocolObj.dressing;
+            document.getElementById('redFlagsText').innerText = protocolObj.flags;
+        }
+
+        // Ignition Point Run parameters
+        window.onload = () => { initProtocolMatrix(); };
+    </script>
+</body>
+</html>
