@@ -2,45 +2,125 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>AI Wound Analysis Pipeline</title>
+    <meta name="description" content="Upload wound images for AI-powered analysis. Get instant severity assessment, wound type classification, and treatment recommendations.">
+    <meta name="theme-color" content="#991b1b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PatchPerfect">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="native-mobile.css">
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans pb-12 sm:pb-0">
+<body class="bg-stone-50 text-stone-800 font-sans pb-24">
 
-    <header class="hidden sm:block bg-red-800 text-white p-4 shadow-md">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-xl">🔬</span>
-                <h1 class="font-bold text-sm sm:text-base">Patch Perfect AI Analysis Engine</h1>
+    <!-- ═══════ MOBILE HEADER ═══════ -->
+    <div class="mobile-header">
+        <div class="mobile-header-inner">
+            <div class="flex items-center gap-2.5">
+                <a href="index.html" class="text-white/70 text-sm font-bold">←</a>
+                <div>
+                    <h1 class="app-title text-[15px]">AI Analysis</h1>
+                </div>
             </div>
-            <a href="index.html" class="text-xs bg-red-950 hover:bg-red-900 px-3 py-1.5 rounded transition">← Cancel & Return Dashboard</a>
+            <a href="index.html" class="text-white/70 text-[11px] bg-white/10 px-2.5 py-1.5 rounded-lg font-semibold">Cancel</a>
         </div>
-    </header>
-
-    <div class="sm:hidden bg-red-800 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40 shadow-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-xl">🔬</span>
-            <h1 class="font-bold text-sm">Analysis Engine</h1>
-        </div>
-        <a href="index.html" class="text-[11px] bg-red-950 px-2.5 py-1 rounded font-medium">← Cancel</a>
     </div>
 
-    <main class="max-w-4xl mx-auto p-4 sm:p-6 mt-2 sm:mt-4 space-y-4 sm:space-y-6">
+    <!-- ═══════ MOBILE BOTTOM NAV ═══════ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-inner">
+            <a href="index.html" class="bottom-nav-item inactive" id="nav-patients">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Patients</span>
+            </a>
+            <a href="analysis.html" class="bottom-nav-item scan-tab" id="nav-scan">
+                <div class="nav-icon-wrap" style="box-shadow: 0 0 0 3px rgba(239,68,68,0.15), 0 4px 14px rgba(185,28,28,0.3);">
+                    <span class="nav-icon">📸</span>
+                </div>
+                <span class="nav-label">Scan</span>
+            </a>
+            <a href="guidelines.html" class="bottom-nav-item inactive" id="nav-guidelines">
+                <span class="nav-icon">🛡️</span>
+                <span class="nav-label">Guidelines</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <main class="max-w-4xl mx-auto p-4 space-y-4 page-enter">
         
-        <div class="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-sm">
-            <span class="text-[10px] sm:text-xs font-bold text-red-700 uppercase tracking-wider block">Active Pipeline Target</span>
-            <h2 id="patientNameDisplay" class="text-xl sm:text-2xl font-bold text-stone-900 mt-0.5">Loading patient info...</h2>
-            <p class="text-xs text-stone-400 mt-1">Ready to receive and bind new imaging file telemetry into clinical history records.</p>
+        <!-- ── Patient Selection Bar ── -->
+        <div class="native-card p-4 space-y-3">
+            <div class="flex items-center gap-3">
+                <div class="patient-avatar" id="patientAvatar">??</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold text-red-700 uppercase tracking-wider">Active Patient Target</p>
+                    <h2 id="patientNameDisplay" class="text-base font-extrabold text-stone-900 truncate tracking-tight">Select Target Patient</h2>
+                </div>
+            </div>
+
+            <!-- Dropdown Selector -->
+            <div class="space-y-1.5 pt-1">
+                <label for="patientSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">Change or Select Patient</label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <select id="patientSelector" onchange="handlePatientSelection()" class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 font-semibold text-stone-700 min-h-[48px] appearance-none cursor-pointer">
+                            <!-- Options populated via JS -->
+                        </select>
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">▼</span>
+                    </div>
+                    <button onclick="showAddNewPatientForm()" class="btn-native-secondary px-4 rounded-xl text-xs font-bold whitespace-nowrap min-h-[48px]">
+                        + New
+                    </button>
+                </div>
+            </div>
+
+            <!-- Inline Add New Patient Form -->
+            <div id="newPatientForm" class="hidden bg-stone-100/50 p-3.5 rounded-xl border border-stone-200/60 space-y-3 stagger-enter">
+                <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider">Add New Patient</h4>
+                <div class="space-y-2">
+                    <input type="text" id="newPatientName" placeholder="Patient Full Name" class="w-full border border-stone-200 rounded-xl text-xs bg-white p-3 font-semibold text-stone-800">
+                    <div class="relative">
+                        <select id="newPatientCondition" class="w-full border border-stone-200 rounded-xl text-xs bg-white p-3 font-semibold text-stone-700 min-h-[44px] appearance-none cursor-pointer">
+                            <option value="" disabled selected>-- Select Wound Condition --</option>
+                            <option value="Diabetic Foot Ulcer">Diabetic Foot Ulcer</option>
+                            <option value="Surgical Wound">Surgical Wound</option>
+                            <option value="Pressure Injury">Pressure Injury</option>
+                            <option value="Venous Ulcer">Venous Ulcer</option>
+                            <option value="Burn Injury">Burn Injury</option>
+                            <option value="Laceration">Laceration</option>
+                        </select>
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">▼</span>
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <button onclick="hideAddNewPatientForm()" class="btn-native-secondary px-3 py-1.5 rounded-lg text-xs font-semibold min-h-[36px]">Cancel</button>
+                    <button onclick="createNewPatient()" class="btn-native-primary px-4 py-1.5 rounded-lg text-xs font-semibold min-h-[36px]">Create & Select</button>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-stone-200 space-y-4">
-            <h3 class="text-base sm:text-lg font-bold text-stone-900">Step 1: Upload Details & Picture</h3>
+        <!-- ── Step Indicator (Mobile) ── -->
+        <div class="step-indicator" id="stepIndicator">
+            <div class="step-dot active" id="step1">1</div>
+            <div class="step-line" id="line1"></div>
+            <div class="step-dot pending" id="step2">2</div>
+            <div class="step-line" id="line2"></div>
+            <div class="step-dot pending" id="step3">3</div>
+        </div>
+
+        <!-- ── Step 1: Upload ── -->
+        <div class="native-card p-4 sm:p-6 space-y-4" id="uploadSection">
+            <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Upload Details & Picture</h3>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label for="regionSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">1. Anatomical Region</label>
-                    <select id="regionSelector" onchange="updateSpecificSites()" class="w-full border border-stone-300 rounded-lg text-xs sm:text-sm bg-stone-50 p-2.5 focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:bg-white transition font-medium text-stone-700">
+                    <select id="regionSelector" onchange="updateSpecificSites()" class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:bg-white transition font-semibold text-stone-700 min-h-[48px] appearance-none cursor-pointer">
                         <option value="" disabled selected>-- Select Body Region --</option>
                         <option value="lower-extremity">Lower Extremity</option>
                         <option value="torso-pelvic">Torso & Pelvic Area</option>
@@ -51,55 +131,120 @@
 
                 <div class="space-y-1.5">
                     <label for="siteSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">2. Specific Wound Site</label>
-                    <select id="siteSelector" disabled class="w-full border border-stone-300 rounded-lg text-xs sm:text-sm bg-stone-50 p-2.5 focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:bg-white transition font-medium text-stone-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <select id="siteSelector" disabled class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:bg-white transition font-semibold text-stone-700 disabled:opacity-40 disabled:cursor-not-allowed min-h-[48px] appearance-none cursor-pointer">
                         <option value="" disabled selected>-- Choose a region first --</option>
                     </select>
                 </div>
             </div>
 
-            <div class="border-2 border-dashed border-stone-300 hover:border-red-600 rounded-xl p-6 sm:p-8 text-center cursor-pointer bg-stone-50 transition flex flex-col items-center justify-center">
-                <span class="text-3xl sm:text-4xl mb-2">📸</span>
-                <p class="text-xs sm:text-sm font-medium text-stone-700">Click to choose a file or drop a picture here</p>
-                <p class="text-[11px] text-stone-400 mt-1">Accepts mobile camera or high-res capture pictures</p>
+            <!-- Camera Upload Area -->
+            <div class="camera-area" id="cameraArea" onclick="triggerCamera()">
+                <div id="cameraPlaceholder">
+                    <span class="camera-icon">📸</span>
+                    <p class="text-sm font-semibold text-stone-700">Tap to take a photo or choose file</p>
+                    <p class="text-xs text-stone-400 mt-1">Use your device camera for best results</p>
+                </div>
+                <div id="imagePreview" class="hidden w-full">
+                    <img id="capturedImage" class="capture-preview" alt="Captured wound image">
+                </div>
             </div>
 
-            <button id="runPipelineBtn" class="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-3 rounded-lg text-sm transition shadow-md">
-                Start AI Analysis
+            <!-- Hidden file inputs -->
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCapture(event)">
+            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImageCapture(event)">
+
+            <!-- Camera Actions (show after capture) -->
+            <div id="cameraActionsWrap" class="hidden camera-actions">
+                <button class="btn-retake" onclick="retakePhoto()">↻ Retake</button>
+                <button class="btn-confirm" onclick="confirmPhoto()">✓ Confirm</button>
+            </div>
+
+            <!-- Run Button -->
+            <button id="runPipelineBtn" class="btn-native btn-native-primary w-full text-base">
+                🔬 Start AI Analysis
             </button>
         </div>
 
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-stone-200 space-y-4">
+        <!-- ── Step 2: Analysis Loading ── -->
+        <div id="analysisLoading" class="hidden native-card p-6 text-center space-y-4">
+            <div class="mx-auto w-16 h-16 rounded-full bg-red-50 flex items-center justify-center analysis-pulse">
+                <span class="text-3xl">🧠</span>
+            </div>
+            <div>
+                <p class="font-bold text-stone-900 text-base">Analyzing wound layers...</p>
+                <p class="text-xs text-stone-500 mt-1">Processing image through AI pipeline</p>
+            </div>
+            <div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                <div id="analysisProgress" class="h-full bg-gradient-to-r from-red-500 to-red-700 rounded-full transition-all duration-1000" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- ── Step 3: Results ── -->
+        <div class="native-card p-4 sm:p-6 space-y-4" id="resultsSection">
             <div class="flex justify-between items-center border-b border-stone-100 pb-3 gap-2">
-                <h3 class="text-base sm:text-lg font-bold text-stone-900">Step 2: Analysis Result</h3>
-                <span id="statusBadge" class="px-2 py-1 bg-stone-100 text-stone-500 rounded text-[11px] sm:text-xs font-medium whitespace-nowrap">Waiting for Picture</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Analysis Result</h3>
+                <span id="statusBadge" class="badge-native badge-warning">Waiting for Picture</span>
             </div>
 
-            <div id="placeholderScreen" class="py-8 text-center text-stone-400 text-xs sm:text-sm">
-                 Please select an anatomical region/site and trigger "Start AI Analysis" above to process input records.
+            <div id="placeholderScreen" class="empty-state py-6">
+                <span class="empty-icon">🔬</span>
+                <p class="empty-title">Awaiting input</p>
+                <p class="empty-desc">Select a region, capture a photo, and tap "Start AI Analysis"</p>
             </div>
 
-            <div id="outputPipeline" class="hidden divide-y divide-stone-100">
-                <div class="py-3 flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-semibold text-stone-500">Wound Type</span>
-                    <span class="font-bold text-red-900 bg-red-50 px-2.5 sm:px-3 py-1 rounded-md border border-red-100 text-xs">Diabetic Ulcer</span>
+            <div id="outputPipeline" class="hidden space-y-3 stagger-enter">
+                <!-- Severity Gauge -->
+                <div class="text-center py-2">
+                    <div class="severity-gauge mx-auto">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="track" cx="50" cy="50" r="40"></circle>
+                            <circle class="fill" cx="50" cy="50" r="40" id="resultGaugeCircle"
+                                    stroke-dasharray="251.33"
+                                    stroke-dashoffset="251.33"
+                                    stroke="#d97706"></circle>
+                        </svg>
+                        <div class="value">5</div>
+                    </div>
+                    <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-2">Severity Score</p>
                 </div>
-                <div class="py-3 flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-semibold text-stone-500">Severity Level</span>
-                    <span class="font-bold text-amber-700 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-md border border-amber-100 text-xs">Moderate</span>
+
+                <!-- Result Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-red-50/60 p-4 rounded-2xl border border-red-100">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Wound Type</p>
+                        <p class="font-extrabold text-red-900 text-sm mt-1">Diabetic Ulcer</p>
+                    </div>
+                    <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-100">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Severity Level</p>
+                        <p class="font-extrabold text-amber-800 text-sm mt-1">Moderate</p>
+                    </div>
+                    <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Healing Status</p>
+                        <p class="font-extrabold text-emerald-800 text-sm mt-1">Improving</p>
+                    </div>
                 </div>
-                <div class="py-3 flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-semibold text-stone-500">Healing Status</span>
-                    <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 sm:px-3 py-1 rounded-md border border-emerald-100 text-xs">Improving</span>
+
+                <!-- Recommendation -->
+                <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60">
+                    <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">AI Recommendation</p>
+                    <p class="text-sm font-semibold text-stone-900 leading-relaxed">Daily monitoring advised. Clean wound periphery with sterile saline solution. Schedule follow-up within 48 hours.</p>
                 </div>
-                <div class="py-4 bg-stone-50 p-4 rounded-xl mt-3 border border-stone-100">
-                    <span class="text-[10px] sm:text-xs font-bold text-stone-400 uppercase tracking-wider block mb-1">Recommendation</span>
-                    <p class="text-xs sm:text-sm font-semibold text-stone-900">Daily monitoring advised</p>
+
+                <!-- Actions -->
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="window.location.href='index.html'" class="btn-native btn-native-secondary text-sm">
+                        ← Back to Dashboard
+                    </button>
+                    <button onclick="saveAndReturn()" class="btn-native btn-native-primary text-sm">
+                        💾 Save & Return
+                    </button>
                 </div>
             </div>
         </div>
 
     </main>
 
+    <script src="native-app.js"></script>
     <script>
         // Mapping of regions to their secondary specific sites
         const siteMapping = {
@@ -129,17 +274,18 @@
             ]
         };
 
+        let imageConfirmed = false;
+
         // Handles region changes and reconstructs the dependent dropdown choices
         function updateSpecificSites() {
+            NativeApp.haptic('light');
             const regionSelect = document.getElementById('regionSelector');
             const siteSelect = document.getElementById('siteSelector');
             const selectedRegion = regionSelect.value;
 
-            // Clear options out completely
             siteSelect.innerHTML = '';
 
             if (selectedRegion && siteMapping[selectedRegion]) {
-                // Re-enable and fill secondary options template
                 siteSelect.disabled = false;
                 
                 const defaultOption = document.createElement('option');
@@ -156,7 +302,6 @@
                     siteSelect.appendChild(option);
                 });
             } else {
-                // Safe absolute defaults fallback reset
                 siteSelect.disabled = true;
                 const fallbackOption = document.createElement('option');
                 fallbackOption.value = "";
@@ -165,42 +310,328 @@
             }
         }
 
+        // Camera trigger
+        function triggerCamera() {
+            NativeApp.haptic('light');
+            // On mobile, prefer camera; on desktop, use file picker
+            const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                document.getElementById('cameraInput').click();
+            } else {
+                document.getElementById('fileInput').click();
+            }
+        }
+
+        // Handle image capture/selection
+        function handleImageCapture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            NativeApp.haptic('success');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('capturedImage').src = e.target.result;
+                document.getElementById('cameraPlaceholder').classList.add('hidden');
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('cameraActionsWrap').classList.remove('hidden');
+                document.getElementById('cameraArea').classList.add('has-image');
+                document.getElementById('cameraArea').onclick = null;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function retakePhoto() {
+            NativeApp.haptic('light');
+            document.getElementById('cameraPlaceholder').classList.remove('hidden');
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('cameraActionsWrap').classList.add('hidden');
+            document.getElementById('cameraArea').classList.remove('has-image');
+            document.getElementById('cameraArea').onclick = triggerCamera;
+            document.getElementById('cameraInput').value = '';
+            document.getElementById('fileInput').value = '';
+            imageConfirmed = false;
+        }
+
+        function confirmPhoto() {
+            NativeApp.haptic('success');
+            imageConfirmed = true;
+            document.getElementById('cameraActionsWrap').classList.add('hidden');
+            NativeApp.showToast('✅ Photo confirmed');
+        }
+
+        // Update step indicator
+        function setStep(stepNum) {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`step${i}`);
+                if (!dot) continue;
+                if (i < stepNum) {
+                    dot.className = 'step-dot completed';
+                    dot.innerHTML = '✓';
+                } else if (i === stepNum) {
+                    dot.className = 'step-dot active';
+                    dot.innerHTML = i;
+                } else {
+                    dot.className = 'step-dot pending';
+                    dot.innerHTML = i;
+                }
+            }
+            for (let i = 1; i <= 2; i++) {
+                const line = document.getElementById(`line${i}`);
+                if (!line) continue;
+                line.className = i < stepNum ? 'step-line completed' : 'step-line';
+            }
+        }
+
+        let activePatientsList = [];
+        let activeSelectedId = null;
+
+        function getPatients() {
+            const defaultPatients = [
+                { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Condition: Diabetic Foot Ulcer | Barangay Health Unit Main", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe (7/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (3/10)", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate (5/10)", color: "text-amber-600", active: true }] },
+                { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Condition: Surgical Wound | Barangay Health Unit Main", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Mild (4/10)", color: "text-emerald-600" }, { date: "May 30, 2026", severity: "Mild (2/10)", color: "text-emerald-600", active: true }] },
+                { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Condition: Pressure Injury | Barangay Health Unit Main", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical (9/10)", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (4/10)", color: "text-emerald-600", active: true }] },
+                { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Condition: Venous Ulcer | Barangay Health Unit Main", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild (3/10)", color: "text-emerald-600", active: true }] },
+                { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Condition: Thermal Burn | Barangay Health Unit Main", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe (8/10)", color: "text-red-700", active: true }] },
+                { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Condition: Fresh Laceration Intake | Barangay Health Unit Main", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
+            ];
+            let pts = localStorage.getItem('patch_perfect_patients');
+            if (!pts) {
+                localStorage.setItem('patch_perfect_patients', JSON.stringify(defaultPatients));
+                return defaultPatients;
+            }
+            return JSON.parse(pts);
+        }
+
+        function populatePatientDropdown(selectedId = null) {
+            const selector = document.getElementById('patientSelector');
+            selector.innerHTML = '';
+            
+            // Add a default unselected option if nothing is chosen
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = "";
+            defaultOpt.disabled = true;
+            if (!selectedId) {
+                defaultOpt.selected = true;
+            }
+            defaultOpt.innerText = "-- Select Target Patient --";
+            selector.appendChild(defaultOpt);
+
+            activePatientsList.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} (#${p.pId})`;
+                if (p.id === selectedId) {
+                    opt.selected = true;
+                }
+                selector.appendChild(opt);
+            });
+        }
+
+        function selectPatient(id) {
+            activeSelectedId = parseInt(id);
+            const data = activePatientsList.find(p => p.id === activeSelectedId);
+            if (!data) return;
+
+            // Update top profile display
+            document.getElementById('patientNameDisplay').innerText = data.name;
+            document.getElementById('patientAvatar').innerText = data.name.split(' ').map(w => w[0]).join('').substring(0, 2);
+        }
+
+        function handlePatientSelection() {
+            const selector = document.getElementById('patientSelector');
+            const selectedId = selector.value;
+            if (selectedId) {
+                NativeApp.haptic('light');
+                selectPatient(selectedId);
+            }
+        }
+
+        function showAddNewPatientForm() {
+            NativeApp.haptic('light');
+            document.getElementById('newPatientForm').classList.remove('hidden');
+            document.getElementById('newPatientName').focus();
+        }
+
+        function hideAddNewPatientForm() {
+            NativeApp.haptic('light');
+            document.getElementById('newPatientForm').classList.add('hidden');
+            document.getElementById('newPatientName').value = '';
+            document.getElementById('newPatientCondition').value = '';
+        }
+
+        function createNewPatient() {
+            const name = document.getElementById('newPatientName').value.trim();
+            const condition = document.getElementById('newPatientCondition').value;
+
+            if (!name || !condition) {
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Fill in patient name and condition');
+                return;
+            }
+
+            NativeApp.haptic('success');
+            
+            const pId = Math.floor(100 + Math.random() * 900).toString();
+            const newId = activePatientsList.length > 0 ? Math.max(...activePatientsList.map(p => p.id)) + 1 : 1;
+
+            const newPatient = {
+                id: newId,
+                pId: pId,
+                name: name,
+                condition: condition,
+                badgeText: "New Patient",
+                badgeType: "info",
+                lastChecked: "Just Added",
+                meta: `Condition: ${condition} | Barangay Health Unit Main`,
+                latestScore: 0,
+                recText: "No diagnostic images uploaded yet. Run first baseline check.",
+                scores: [],
+                labels: [],
+                history: []
+            };
+
+            activePatientsList.push(newPatient);
+            localStorage.setItem('patch_perfect_patients', JSON.stringify(activePatientsList));
+
+            populatePatientDropdown(newId);
+            selectPatient(newId);
+            hideAddNewPatientForm();
+            NativeApp.showToast(`✅ Added ${name}`);
+        }
+
+        function saveAndReturn() {
+            NativeApp.haptic('success');
+            
+            if (activeSelectedId) {
+                const patientIndex = activePatientsList.findIndex(p => p.id === activeSelectedId);
+                if (patientIndex !== -1) {
+                    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+                    const score = 5; // mock score
+                    
+                    activePatientsList[patientIndex].latestScore = score;
+                    activePatientsList[patientIndex].badgeText = "Stable";
+                    activePatientsList[patientIndex].badgeType = "success";
+                    activePatientsList[patientIndex].lastChecked = "Today";
+                    activePatientsList[patientIndex].recText = "Daily monitoring advised. Clean wound periphery with sterile saline solution. Schedule follow-up within 48 hours.";
+                    
+                    if (!activePatientsList[patientIndex].scores) activePatientsList[patientIndex].scores = [];
+                    if (!activePatientsList[patientIndex].labels) activePatientsList[patientIndex].labels = [];
+                    if (!activePatientsList[patientIndex].history) activePatientsList[patientIndex].history = [];
+                    
+                    const weekNum = activePatientsList[patientIndex].scores.length + 1;
+                    activePatientsList[patientIndex].scores.push(score);
+                    activePatientsList[patientIndex].labels.push(`Week ${weekNum}`);
+                    
+                    activePatientsList[patientIndex].history.forEach(h => h.active = false);
+                    
+                    activePatientsList[patientIndex].history.unshift({
+                        date: today,
+                        severity: `Moderate (${score}/10)`,
+                        color: "text-amber-600",
+                        active: true
+                    });
+                    
+                    localStorage.setItem('patch_perfect_patients', JSON.stringify(activePatientsList));
+                }
+            }
+
+            NativeApp.showToast('💾 Analysis saved to patient record');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1200);
+        }
+
         // Catch and verify data transfer query strings
         window.onload = function() {
+            NativeApp.init();
+            
+            // Load patients from storage
+            activePatientsList = getPatients();
+
             const urlParams = new URLSearchParams(window.location.search);
             const nameParam = urlParams.get('name');
             
-            const displayField = document.getElementById('patientNameDisplay');
+            let matchedId = null;
             if (nameParam) {
-                displayField.innerText = `Scanning Wound For: ${decodeURIComponent(nameParam)}`;
+                const decodedName = decodeURIComponent(nameParam);
+                const matched = activePatientsList.find(p => p.name.toLowerCase() === decodedName.toLowerCase());
+                if (matched) {
+                    matchedId = matched.id;
+                }
+            }
+            
+            populatePatientDropdown(matchedId);
+            if (matchedId) {
+                selectPatient(matchedId);
             } else {
-                displayField.innerText = "Scanning Wound For: Unknown Patient Prospect";
+                document.getElementById('patientNameDisplay').innerText = "Select Target Patient";
+                document.getElementById('patientAvatar').innerText = "??";
             }
         };
 
         // Execution Pipeline Trigger Logic
         document.getElementById('runPipelineBtn').addEventListener('click', () => {
+            if (!activeSelectedId) {
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Please select a patient first');
+                document.getElementById('patientSelector').focus();
+                return;
+            }
+
             const regionSelect = document.getElementById('regionSelector');
             const siteSelect = document.getElementById('siteSelector');
             
-            // Validation rules checker
             if (!regionSelect.value || !siteSelect.value) {
-                alert("Please select both the Anatomical Region and the Specific Wound Site before running the analysis.");
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Select region and wound site first');
                 if (!regionSelect.value) regionSelect.focus();
                 else siteSelect.focus();
                 return;
             }
 
+            NativeApp.haptic('medium');
+
+            // Update step indicator
+            setStep(2);
+
+            // Show loading state
+            const loading = document.getElementById('analysisLoading');
+            loading.classList.remove('hidden');
+            
             const badge = document.getElementById('statusBadge');
-            badge.innerText = "Analyzing Picture Layers...";
-            badge.className = "px-2 py-1 bg-amber-100 text-amber-700 rounded text-[11px] sm:text-xs font-medium animate-pulse";
+            badge.innerText = "Analyzing...";
+            badge.className = "badge-native badge-warning analysis-pulse";
+
+            // Animate progress bar
+            const progress = document.getElementById('analysisProgress');
+            setTimeout(() => progress.style.width = '30%', 200);
+            setTimeout(() => progress.style.width = '60%', 500);
+            setTimeout(() => progress.style.width = '90%', 800);
             
             setTimeout(() => {
-                document.getElementById('placeholderScreen').classList.add('hidden');
-                document.getElementById('outputPipeline').classList.remove('hidden');
-                badge.innerText = "Analysis Complete";
-                badge.className = "px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[11px] sm:text-xs font-medium";
-            }, 1000); 
+                progress.style.width = '100%';
+
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                    document.getElementById('placeholderScreen').classList.add('hidden');
+                    document.getElementById('outputPipeline').classList.remove('hidden');
+                    
+                    badge.innerText = "Complete";
+                    badge.className = "badge-native badge-success";
+                    
+                    setStep(3);
+                    NativeApp.haptic('success');
+                    NativeApp.staggerIn('#outputPipeline');
+
+                    // Animate gauge
+                    const circumference = 2 * Math.PI * 40;
+                    const score = 5;
+                    const offset = circumference - (score / 10) * circumference;
+                    setTimeout(() => {
+                        document.getElementById('resultGaugeCircle').setAttribute('stroke-dashoffset', offset);
+                    }, 300);
+                }, 300);
+            }, 1200);
         });
     </script>
 </body>

@@ -2,101 +2,135 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>Patch Perfect AI - Treatment Guidelines</title>
+    <meta name="description" content="Standardized clinical treatment guidelines for wound care. Protocols for diabetic ulcers, surgical wounds, and pressure injuries.">
+    <meta name="theme-color" content="#991b1b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PatchPerfect">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="native-mobile.css">
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans pb-20 sm:pb-0">
+<body class="bg-stone-50 text-stone-800 font-sans pb-24">
 
-    <nav class="hidden sm:flex bg-red-800 text-white shadow-md px-6 py-4 justify-between items-center gap-4">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl">🩹</span>
-            <h1 class="text-xl font-bold tracking-wide">Patch Perfect AI</h1>
-        </div>
-        <div class="space-x-1 sm:space-x-4 text-sm font-medium flex">
-            <a href="index.html" class="hover:bg-red-700 px-3 py-2 rounded-md transition text-stone-200">Patient List & History</a>
-            <a href="guidelines.html" class="bg-red-950 px-3 py-2 rounded-md font-semibold transition">Treatment Guidelines</a>
-        </div>
-    </nav>
-
-    <div class="sm:hidden bg-red-800 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40 shadow-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-xl">🩹</span>
-            <h1 class="font-bold text-base tracking-wide">Patch Perfect AI</h1>
+    <!-- ═══════ MOBILE HEADER ═══════ -->
+    <div class="mobile-header">
+        <div class="mobile-header-inner">
+            <div class="flex items-center gap-2.5">
+                <span class="app-icon">🩹</span>
+                <h1 class="app-title">Guidelines</h1>
+            </div>
         </div>
     </div>
 
-    <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 shadow-xl z-50 px-4 py-2 flex justify-around items-center">
-        <a href="index.html" class="flex flex-col items-center justify-center text-center w-20 py-1 text-stone-400 hover:text-stone-600 transition">
-            <span class="text-xl">📋</span>
-            <span class="text-[10px] mt-0.5 tracking-tight">Patients</span>
-        </a>
-        <a href="guidelines.html" class="flex flex-col items-center justify-center text-center w-20 py-1 text-red-800 font-semibold">
-            <span class="text-xl">🛡️</span>
-            <span class="text-[10px] mt-0.5 tracking-tight">Guidelines</span>
-        </a>
+    <!-- ═══════ MOBILE BOTTOM NAV ═══════ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-inner">
+            <a href="index.html" class="bottom-nav-item inactive" id="nav-patients">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Patients</span>
+            </a>
+            <a href="analysis.html" class="bottom-nav-item scan-tab" id="nav-scan">
+                <div class="nav-icon-wrap">
+                    <span class="nav-icon">📸</span>
+                </div>
+                <span class="nav-label">Scan</span>
+            </a>
+            <a href="guidelines.html" class="bottom-nav-item active" id="nav-guidelines">
+                <span class="nav-icon">🛡️</span>
+                <span class="nav-label">Guidelines</span>
+            </a>
+        </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <main class="max-w-7xl mx-auto p-4 space-y-4 page-enter">
         
-        <div class="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-sm">
-            <h2 class="text-lg sm:text-xl font-bold text-stone-900">Clinical Protocol Guidance Center</h2>
-            <p class="text-[11px] sm:text-xs text-stone-400 mt-1">Standardized medical instructions to aid primary treatment decisions following AI wound segmentation assessments.</p>
+        <!-- ── Section Header ── -->
+        <div class="native-card p-4">
+            <div class="section-header pt-0">
+                <h2 class="section-title">Clinical Protocols</h2>
+                <p class="section-subtitle">Standardized treatment guidance following AI wound assessments</p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:grid-cols-1 lg:gap-6">
-            
-            <div class="space-y-2">
-                <span class="text-[11px] sm:text-xs font-bold text-stone-400 uppercase tracking-wider block px-1">Select Wound Profile</span>
-                <div id="protocolMenu" class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 lg:flex lg:flex-col lg:space-y-1">
-                    </div>
-            </div>
+        <!-- ── Pill Tabs ── -->
+        <div>
+            <div class="pill-tabs" id="mobilePillTabs"></div>
+        </div>
 
-            <div class="lg:col-span-3 bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-sm space-y-4 sm:space-y-6">
+        <!-- Protocol Content -->
+        <div class="space-y-4">
                 
-                <div class="flex justify-between items-start border-b border-stone-100 pb-4 gap-4">
-                    <div>
-                        <h3 id="guidelineTitle" class="text-xl sm:text-2xl font-bold text-stone-900">--</h3>
-                        <p id="guidelineDesc" class="text-[11px] sm:text-xs text-stone-400 mt-0.5">--</p>
-                    </div>
-                    <span id="riskBadge" class="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md border whitespace-nowrap">--</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
-                        <span class="text-base sm:text-lg">🧼</span>
-                        <h4 class="font-bold text-stone-900 text-sm">1. Cleansing & Debridement</h4>
-                        <p id="cleansingText" class="text-xs text-stone-600 leading-relaxed">--</p>
-                    </div>
-
-                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/60 space-y-2">
-                        <span class="text-base sm:text-lg">🛡️</span>
-                        <h4 class="font-bold text-stone-900 text-sm">2. Preferred Dressing Selection</h4>
-                        <p id="dressingText" class="text-xs text-stone-600 leading-relaxed">--</p>
+                <!-- Title Card -->
+                <div class="native-card p-4">
+                    <div class="flex justify-between items-start gap-4">
+                        <div>
+                            <h3 id="guidelineTitle" class="text-xl font-extrabold text-stone-900 tracking-tight">--</h3>
+                            <p id="guidelineDesc" class="text-xs text-stone-400 mt-1">--</p>
+                        </div>
+                        <span id="riskBadge" class="badge-native whitespace-nowrap">--</span>
                     </div>
                 </div>
 
-                <div class="bg-red-50/40 p-4 rounded-xl border border-red-200/60 space-y-2">
-                    <div class="flex items-center gap-2 text-red-800 font-bold text-sm">
-                        <span class="text-base">⚠️</span>
-                        <h4>Clinical Red Flags (Immediate Medical Escalation)</h4>
+                <!-- Accordion Sections (Mobile) / Cards (Desktop) -->
+                <div class="space-y-3" id="protocolContent">
+                    
+                    <!-- 1. Cleansing -->
+                    <div class="accordion-item open" id="accordion-cleansing">
+                        <div class="accordion-header" onclick="toggleAccordion('cleansing')">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🧼</span>
+                                <h4 class="font-bold text-stone-900 text-sm">1. Cleansing & Debridement</h4>
+                            </div>
+                            <span class="accordion-chevron">▼</span>
+                        </div>
+                        <div class="accordion-body">
+                            <p id="cleansingText" class="text-xs sm:text-sm text-stone-600 leading-relaxed">--</p>
+                        </div>
                     </div>
-                    <p id="redFlagsText" class="text-xs text-red-950/80 leading-relaxed font-medium">--</p>
-                </div>
 
+                    <!-- 2. Dressing -->
+                    <div class="accordion-item" id="accordion-dressing">
+                        <div class="accordion-header" onclick="toggleAccordion('dressing')">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🛡️</span>
+                                <h4 class="font-bold text-stone-900 text-sm">2. Preferred Dressing Selection</h4>
+                            </div>
+                            <span class="accordion-chevron">▼</span>
+                        </div>
+                        <div class="accordion-body">
+                            <p id="dressingText" class="text-xs sm:text-sm text-stone-600 leading-relaxed">--</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Red Flags -->
+                    <div class="alert-banner pulse" id="redFlagsCard">
+                        <div class="flex items-center gap-2 font-bold text-sm mb-2">
+                            <span class="text-base">⚠️</span>
+                            <h4 class="text-red-800">Clinical Red Flags</h4>
+                        </div>
+                        <p class="text-[11px] font-bold text-red-900/50 uppercase tracking-wider mb-1">Immediate Medical Escalation Required If:</p>
+                        <p id="redFlagsText" class="text-xs sm:text-sm text-red-950/80 leading-relaxed font-medium">--</p>
+                    </div>
+                </div>
             </div>
-        </div>
     </main>
 
+    <script src="native-app.js"></script>
     <script>
-        // Clinical Treatment Database Structure Matching Core Application Profiles
+        // Clinical Treatment Database
         const clinicalProtocols = [
             {
                 id: "diabetic",
                 name: "Diabetic Foot Ulcer",
                 desc: "Focuses on maximizing offloading containment and moisture balance containment parameters.",
-                risk: "High Risk Profile",
-                riskClass: "bg-red-50 text-red-700 border-red-100",
+                risk: "High Risk",
+                riskClass: "badge-danger",
                 cleansing: "Flush with sterile normal saline solution. Avoid aggressive mechanical scrubbing over exposed margins. Carefully remove calloused hyperkeratotic borders using sterile instruments if cleared by an attending supervisor.",
                 dressing: "Apply silver-infused hydrocolloids or calcium alginate options if exudate amounts test high. Maintain clean non-adhesive protective coverings to control peripheral tissue breakdown risks.",
                 flags: "Look for localized foul odors, spreading margins of active erythema exceeding 2cm from borders, sudden temperature changes over surrounding ankles, or bone exposure visible through tissue cracks."
@@ -105,8 +139,8 @@
                 id: "surgical",
                 name: "Surgical Wound",
                 desc: "Focuses on maintaining environmental incision line closure safety barriers.",
-                risk: "Standard Risk",
-                riskClass: "bg-stone-100 text-stone-700 border-stone-200",
+                risk: "Standard",
+                riskClass: "badge-success",
                 cleansing: "Cleanse with mild liquid antiseptic soap or sterile saline wash solutions. Keep primary crusting structures undisturbed over healing perimeter staples.",
                 dressing: "Utilize transparent semi-permeable film dressings for low-exudate incisions. Switch out to dynamic vapor-permeable foam layers if clear fluid collecting risks increase over time.",
                 flags: "Active suture line dehiscence separation, thick purulent drainage collections, localized hard localized swelling, or systemic fever trends tracking upward past 38°C."
@@ -115,64 +149,86 @@
                 id: "pressure",
                 name: "Pressure Injury",
                 desc: "Focuses on structural pressure relief schedules and dead-space management packs.",
-                risk: "Moderate Risk",
-                riskClass: "bg-amber-50 text-amber-700 border-amber-100",
+                risk: "Moderate",
+                riskClass: "badge-warning",
                 cleansing: "Wash through clean non-cytotoxic solutions. Do not clean structural surface spaces using harsh hydrogen peroxide compounds which stall underlying granulated cell progression cycles.",
                 dressing: "Apply hydrogel matrices over unexposed base beds to maintain functional cellular expansion environments. Protect edge rims with hydrocolloid border rings.",
                 flags: "Rapid tracking transitions revealing black necrotic slough layers, pocketed sinus track tunneling depths found upon probing, or surrounding skin fluctuation signals."
             }
         ];
 
-        // Dynamic Protocol Menu Generation Engine
+        let activeProtocolId = 'diabetic';
+
+        // Accordion toggle
+        function toggleAccordion(id) {
+            NativeApp.haptic('light');
+            const item = document.getElementById(`accordion-${id}`);
+            if (!item) return;
+            item.classList.toggle('open');
+        }
+
+        // Protocol Menu Generation
         function initProtocolMatrix() {
-            const menuContainer = document.getElementById('protocolMenu');
-            menuContainer.innerHTML = '';
+            // Mobile pill tabs
+            const pillContainer = document.getElementById('mobilePillTabs');
+            if (pillContainer) {
+                pillContainer.innerHTML = '';
+                clinicalProtocols.forEach((item, index) => {
+                    const pill = document.createElement('button');
+                    pill.id = `pill-${item.id}`;
+                    pill.className = `pill-tab ${index === 0 ? 'active' : ''}`;
+                    pill.innerText = item.name;
+                    pill.setAttribute('onclick', `switchActiveProtocol('${item.id}')`);
+                    pillContainer.appendChild(pill);
+                });
+            }
 
-            clinicalProtocols.forEach((item, index) => {
-                const btn = document.createElement('button');
-                btn.id = `btn-${item.id}`;
-                btn.className = index === 0 
-                    ? "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs"
-                    : "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-medium text-[11px] sm:text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
-                
-                btn.innerText = item.name;
-                btn.setAttribute('onclick', `switchActiveProtocol('${item.id}')`);
-                menuContainer.appendChild(btn);
-            });
-
-            // Initialize display with default active array element 
             loadGuidelinesData(clinicalProtocols[0]);
         }
 
-        // Handle Active Style Tab State Toggles
+        // Switch protocol
         function switchActiveProtocol(targetId) {
+            NativeApp.haptic('medium');
+            activeProtocolId = targetId;
+
+            // Update mobile pills
             clinicalProtocols.forEach(item => {
-                const element = document.getElementById(`btn-${item.id}`);
+                const pill = document.getElementById(`pill-${item.id}`);
+                if (!pill) return;
                 if (item.id === targetId) {
-                    element.className = "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs bg-red-50 text-red-900 border border-red-100 block transition shadow-2xs";
+                    pill.className = 'pill-tab active';
                     loadGuidelinesData(item);
                 } else {
-                    element.className = "w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-medium text-[11px] sm:text-xs bg-white text-stone-600 border border-stone-200 hover:border-stone-300 block transition";
+                    pill.className = 'pill-tab';
                 }
             });
         }
 
-        // Bind Active Database Details into Document Elements
+        // Load protocol data
         function loadGuidelinesData(protocolObj) {
             document.getElementById('guidelineTitle').innerText = protocolObj.name;
             document.getElementById('guidelineDesc').innerText = protocolObj.desc;
             
             const badge = document.getElementById('riskBadge');
             badge.innerText = protocolObj.risk;
-            badge.className = `text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md border ${protocolObj.riskClass}`;
+            badge.className = `badge-native ${protocolObj.riskClass}`;
 
             document.getElementById('cleansingText').innerText = protocolObj.cleansing;
             document.getElementById('dressingText').innerText = protocolObj.dressing;
             document.getElementById('redFlagsText').innerText = protocolObj.flags;
+
+            // Re-trigger stagger animation
+            const content = document.getElementById('protocolContent');
+            content.classList.remove('stagger-enter');
+            content.offsetHeight; // Force reflow
+            content.classList.add('stagger-enter');
         }
 
-        // Ignition Point Run parameters
-        window.onload = () => { initProtocolMatrix(); };
+        // Init
+        window.onload = () => {
+            NativeApp.init();
+            initProtocolMatrix();
+        };
     </script>
 </body>
 </html>
