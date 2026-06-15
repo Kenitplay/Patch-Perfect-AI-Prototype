@@ -115,27 +115,7 @@
 
         <!-- ── Step 1: Upload ── -->
         <div class="native-card p-4 sm:p-6 space-y-4" id="uploadSection">
-            <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Upload Details & Picture</h3>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="space-y-1.5">
-                    <label for="regionSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">1. Anatomical Region</label>
-                    <select id="regionSelector" onchange="updateSpecificSites()" class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:bg-white transition font-semibold text-stone-700 min-h-[48px] appearance-none cursor-pointer">
-                        <option value="" disabled selected>-- Select Body Region --</option>
-                        <option value="lower-extremity">Lower Extremity</option>
-                        <option value="torso-pelvic">Torso & Pelvic Area</option>
-                        <option value="upper-body">Upper Body & Arms</option>
-                        <option value="head-neck">Head & Neck</option>
-                    </select>
-                </div>
-
-                <div class="space-y-1.5">
-                    <label for="siteSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">2. Specific Wound Site</label>
-                    <select id="siteSelector" disabled class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:bg-white transition font-semibold text-stone-700 disabled:opacity-40 disabled:cursor-not-allowed min-h-[48px] appearance-none cursor-pointer">
-                        <option value="" disabled selected>-- Choose a region first --</option>
-                    </select>
-                </div>
-            </div>
+            <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Upload Picture</h3>
 
             <!-- Camera Upload Area -->
             <div class="camera-area" id="cameraArea" onclick="triggerCamera()">
@@ -189,7 +169,7 @@
             <div id="placeholderScreen" class="empty-state py-6">
                 <span class="empty-icon">🔬</span>
                 <p class="empty-title">Awaiting input</p>
-                <p class="empty-desc">Select a region, capture a photo, and tap "Start AI Analysis"</p>
+                <p class="empty-desc">Select a patient, capture a photo, and tap "Start AI Analysis"</p>
             </div>
 
             <div id="outputPipeline" class="hidden space-y-3 stagger-enter">
@@ -246,69 +226,7 @@
 
     <script src="native-app.js"></script>
     <script>
-        // Mapping of regions to their secondary specific sites
-        const siteMapping = {
-            "lower-extremity": [
-                { value: "foot-plantar", label: "Foot - Plantar Surface (Sole)" },
-                { value: "foot-dorsal", label: "Foot - Dorsal Surface (Top)" },
-                { value: "heel", label: "Heel / Ankle" },
-                { value: "lower-leg", label: "Lower Leg" },
-                { value: "thigh-knee", label: "Thigh / Knee" }
-            ],
-            "torso-pelvic": [
-                { value: "sacrum", label: "Sacrum / Coccyx" },
-                { value: "hip", label: "Hip / Ischial Tuberosity" },
-                { value: "abdomen", label: "Abdomen" },
-                { value: "buttock", label: "Buttock" }
-            ],
-            "upper-body": [
-                { value: "arm", label: "Upper Arm / Forearm" },
-                { value: "hand", label: "Hand (Palm / Dorsum)" },
-                { value: "chest", label: "Chest" },
-                { value: "upper-back", label: "Upper Back" }
-            ],
-            "head-neck": [
-                { value: "scalp", label: "Scalp / Head" },
-                { value: "face", label: "Face" },
-                { value: "neck", label: "Neck" }
-            ]
-        };
-
         let imageConfirmed = false;
-
-        // Handles region changes and reconstructs the dependent dropdown choices
-        function updateSpecificSites() {
-            NativeApp.haptic('light');
-            const regionSelect = document.getElementById('regionSelector');
-            const siteSelect = document.getElementById('siteSelector');
-            const selectedRegion = regionSelect.value;
-
-            siteSelect.innerHTML = '';
-
-            if (selectedRegion && siteMapping[selectedRegion]) {
-                siteSelect.disabled = false;
-                
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                defaultOption.innerText = "-- Select Specific Site --";
-                siteSelect.appendChild(defaultOption);
-
-                siteMapping[selectedRegion].forEach(site => {
-                    const option = document.createElement('option');
-                    option.value = site.value;
-                    option.innerText = site.label;
-                    siteSelect.appendChild(option);
-                });
-            } else {
-                siteSelect.disabled = true;
-                const fallbackOption = document.createElement('option');
-                fallbackOption.value = "";
-                fallbackOption.innerText = "-- Choose a region first --";
-                siteSelect.appendChild(fallbackOption);
-            }
-        }
 
         // Camera trigger
         function triggerCamera() {
@@ -575,17 +493,6 @@
                 NativeApp.haptic('error');
                 NativeApp.showToast('⚠️ Please select a patient first');
                 document.getElementById('patientSelector').focus();
-                return;
-            }
-
-            const regionSelect = document.getElementById('regionSelector');
-            const siteSelect = document.getElementById('siteSelector');
-            
-            if (!regionSelect.value || !siteSelect.value) {
-                NativeApp.haptic('error');
-                NativeApp.showToast('⚠️ Select region and wound site first');
-                if (!regionSelect.value) regionSelect.focus();
-                else siteSelect.focus();
                 return;
             }
 
