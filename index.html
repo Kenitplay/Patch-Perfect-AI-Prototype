@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Patch Perfect AI - Community Health Portal</title>
-    <meta name="description" content="AI-powered wound care management for community health workers. Track patients, analyze wounds, and follow treatment guidelines.">
+    <title>Patch Perfect AI · Wound Profiles</title>
+    <meta name="description" content="AI-powered wound care management — track wounds, severity, and treatment guidelines.">
     <meta name="theme-color" content="#991b1b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,6 +15,235 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="native-mobile.css">
+    <style>
+        .wound-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .wound-badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .wound-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .wound-badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .patient-avatar {
+            background: #991b1b;
+            color: white;
+            font-weight: 700;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        .bottom-nav .scan-tab .nav-icon-wrap {
+            background: #991b1b;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -12px;
+            box-shadow: 0 4px 12px rgba(153,27,27,0.25);
+        }
+        .bottom-nav-item {
+            cursor: pointer;
+        }
+        .bottom-nav-item.active {
+            opacity: 1;
+        }
+        .bottom-nav-item.inactive {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .severity-gauge {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .severity-gauge svg {
+            transform: rotate(-90deg);
+            width: 110px;
+            height: 110px;
+        }
+        .severity-gauge .track {
+            fill: none;
+            stroke: #e7e5e4;
+            stroke-width: 8;
+        }
+        .severity-gauge .fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .severity-gauge .value {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .severity-gauge .value .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1c1917;
+            line-height: 1;
+        }
+        .severity-gauge .value .label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .timeline-item {
+            border-left: 2px solid #e7e5e4;
+            padding-left: 16px;
+            margin-left: 6px;
+        }
+        .timeline-item.active {
+            border-left-color: #991b1b;
+        }
+        .timeline-item:last-child {
+            border-left-color: transparent;
+        }
+        .bottom-sheet-body {
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 60;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            border-radius: 28px 28px 0 0;
+            padding: 24px 20px 32px;
+            transform: translateY(40px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow-y: auto;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+        }
+        .modal-overlay.open .modal-card {
+            transform: translateY(0);
+        }
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #d6d3d1;
+            border-radius: 4px;
+            margin: 0 auto 18px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e7e5e4;
+            border-radius: 16px;
+            font-size: 17px;
+            background: #fafaf9;
+            transition: border 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #991b1b;
+            background: white;
+        }
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #44403c;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .btn-primary {
+            background: #991b1b;
+            color: white;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 40px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .btn-primary:active {
+            background: #7f1d1d;
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 40px;
+            border: none;
+            width: 100%;
+            font-size: 15px;
+        }
+        .modal-subtitle {
+            color: #78716c;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .guideline-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 16px;
+            border: 1px solid #e7e5e4;
+            transition: all 0.2s;
+        }
+        .guideline-card:active {
+            transform: scale(0.98);
+            background: #fafaf9;
+        }
+        .guideline-icon {
+            font-size: 28px;
+            line-height: 1;
+        }
+        .view-hidden {
+            display: none !important;
+        }
+        .severity-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .label-mild { color: #16a34a; }
+        .label-moderate { color: #d97706; }
+        .label-severe { color: #dc2626; }
+        .label-critical { color: #991b1b; }
+        .label-none { color: #78716c; }
+    </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans pb-24">
 
@@ -34,9 +263,9 @@
     <!-- ═══════ MOBILE BOTTOM NAV ═══════ -->
     <nav class="bottom-nav" id="bottomNav">
         <div class="bottom-nav-inner">
-            <a href="index.html" class="bottom-nav-item active" id="nav-patients">
+            <a href="#" class="bottom-nav-item active" id="nav-patients" onclick="switchTab('wounds')">
                 <span class="nav-icon">📋</span>
-                <span class="nav-label">Patients</span>
+                <span class="nav-label">Wounds</span>
             </a>
             <a href="analysis.html" class="bottom-nav-item scan-tab" id="nav-scan">
                 <div class="nav-icon-wrap">
@@ -44,7 +273,7 @@
                 </div>
                 <span class="nav-label">Scan</span>
             </a>
-            <a href="guidelines.html" class="bottom-nav-item inactive" id="nav-guidelines">
+            <a href="#" class="bottom-nav-item" id="nav-guidelines" onclick="switchTab('guidelines')">
                 <span class="nav-icon">🛡️</span>
                 <span class="nav-label">Guidelines</span>
             </a>
@@ -54,41 +283,40 @@
     <!-- ═══════ MAIN CONTENT ═══════ -->
     <main class="max-w-7xl mx-auto px-4">
         
-        <div id="view-dashboard" class="space-y-4 page-enter">
-            
-            <!-- ── SECTION: Patient List ── -->
+        <!-- ── VIEW: Wounds ── -->
+        <div id="view-wounds" class="space-y-4 page-enter">
             <div class="native-card p-0">
-                
-                <!-- Mobile Section Header -->
                 <div class="section-header px-1 pt-3">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="section-label">Step 1</p>
-                            <h2 class="section-title">Patients</h2>
+                            <h2 class="section-title">Wound Profiles</h2>
                         </div>
-                        <span id="totalPatientBadge" class="badge-native badge-info">Total: --</span>
+                        <span id="totalWoundBadge" class="badge-native badge-info">Total: --</span>
                     </div>
-                    <p class="section-subtitle">Select a patient to view their records</p>
+                    <p class="section-subtitle">Select a wound to view full profile &amp; trends</p>
                 </div>
 
-                <!-- Search Bar -->
-                <div class="native-search-wrap mt-2">
-                    <div class="native-search">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="patientSearch" onkeyup="filterPatients()" placeholder="Search name or ID...">
+                <div class="flex items-center gap-2 mt-2 px-1">
+                    <div class="native-search-wrap flex-1">
+                        <div class="native-search">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="patientSearch" onkeyup="filterWounds()" placeholder="Search by patient or ID...">
+                        </div>
                     </div>
+                    <button onclick="openCreateModal()" class="btn-native btn-native-primary px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap" style="background:#991b1b; color:white; border:none;">
+                        + New
+                    </button>
                 </div>
 
-                <!-- Patient Grid -->
-                <div id="patientGrid" class="grid grid-cols-1 gap-3 px-1 mt-3 stagger-enter"></div>
+                <div id="woundGrid" class="grid grid-cols-1 gap-3 px-1 mt-3 stagger-enter"></div>
                 
                 <div id="emptySearchState" class="hidden empty-state mx-1">
                     <span class="empty-icon">🔍</span>
-                    <p class="empty-title">No matches found</p>
-                    <p class="empty-desc">Try a different search term or clear the search field</p>
+                    <p class="empty-title">No wounds found</p>
+                    <p class="empty-desc">Try a different search term</p>
                 </div>
 
-                <!-- Pagination -->
                 <div id="paginationControls" class="flex items-center justify-between border-t border-stone-100 pt-4 mt-4 text-xs font-semibold text-stone-500 px-1 pb-4">
                     <span id="paginationInfo">Showing 1 to 3 of 3</span>
                     <div class="flex gap-2">
@@ -97,27 +325,102 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- ── VIEW: Guidelines ── -->
+        <div id="view-guidelines" class="view-hidden space-y-4 page-enter">
+            <div class="native-card p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">🛡️</span>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-stone-900">Treatment Guidelines</h2>
+                        <p class="text-sm text-stone-500">Evidence-based wound care protocols</p>
+                    </div>
+                </div>
 
+                <div class="space-y-3">
+                    <div class="guideline-card" onclick="showGuidelineDetail('diabetic')">
+                        <div class="flex items-center gap-3">
+                            <span class="guideline-icon">🦶</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-stone-900">Diabetic Foot Ulcer</h3>
+                                <p class="text-sm text-stone-500">Offloading, debridement, and infection control</p>
+                            </div>
+                            <span class="text-stone-400">›</span>
+                        </div>
+                    </div>
+
+                    <div class="guideline-card" onclick="showGuidelineDetail('surgical')">
+                        <div class="flex items-center gap-3">
+                            <span class="guideline-icon">🔪</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-stone-900">Surgical Wound</h3>
+                                <p class="text-sm text-stone-500">Clean technique, drainage, and suture care</p>
+                            </div>
+                            <span class="text-stone-400">›</span>
+                        </div>
+                    </div>
+
+                    <div class="guideline-card" onclick="showGuidelineDetail('pressure')">
+                        <div class="flex items-center gap-3">
+                            <span class="guideline-icon">🛏️</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-stone-900">Pressure Injury</h3>
+                                <p class="text-sm text-stone-500">Repositioning, support surfaces, and nutrition</p>
+                            </div>
+                            <span class="text-stone-400">›</span>
+                        </div>
+                    </div>
+
+                    <div class="guideline-card" onclick="showGuidelineDetail('venous')">
+                        <div class="flex items-center gap-3">
+                            <span class="guideline-icon">🩸</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-stone-900">Venous Ulcer</h3>
+                                <p class="text-sm text-stone-500">Compression therapy, elevation, and wound dressings</p>
+                            </div>
+                            <span class="text-stone-400">›</span>
+                        </div>
+                    </div>
+
+                    <div class="guideline-card" onclick="showGuidelineDetail('burn')">
+                        <div class="flex items-center gap-3">
+                            <span class="guideline-icon">🔥</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-stone-900">Burn Injury</h3>
+                                <p class="text-sm text-stone-500">Cooling, dressing, and infection prevention</p>
+                            </div>
+                            <span class="text-stone-400">›</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="guidelineDetail" class="view-hidden native-card p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <button onclick="hideGuidelineDetail()" class="text-stone-500 text-xl">←</button>
+                    <h3 id="detailTitle" class="text-lg font-extrabold text-stone-900 flex-1">--</h3>
+                </div>
+                <div id="detailContent" class="space-y-3 text-sm text-stone-700 leading-relaxed"></div>
+            </div>
         </div>
     </main>
 
-    <!-- ═══════ MOBILE BOTTOM SHEET ═══════ -->
+    <!-- ═══════ MOBILE BOTTOM SHEET (Wound Profile) ═══════ -->
     <div class="bottom-sheet-overlay" id="sheetOverlay"></div>
-    <div class="bottom-sheet" id="patientSheet">
+    <div class="bottom-sheet" id="woundSheet">
         <div class="bottom-sheet-handle"></div>
         <div class="bottom-sheet-header">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Patient Record</p>
-                    <h2 id="sheet-patient-name" class="text-xl font-extrabold text-stone-900 tracking-tight">--</h2>
-                    <p id="sheet-patient-meta" class="text-xs text-stone-500 mt-0.5">--</p>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Wound Profile</p>
+                    <h2 id="sheet-wound-name" class="text-xl font-extrabold text-stone-900 tracking-tight">--</h2>
+                    <p id="sheet-wound-meta" class="text-xs text-stone-500 mt-0.5">--</p>
                 </div>
-                <button onclick="patientBottomSheet.close()" class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 text-sm font-bold">✕</button>
+                <button onclick="woundBottomSheet.close()" class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 text-sm font-bold">✕</button>
             </div>
         </div>
         <div class="bottom-sheet-body space-y-5">
-            <!-- Severity Gauge -->
             <div class="text-center" id="sheet-gauge-wrap">
                 <div class="severity-gauge" id="severityGauge">
                     <svg viewBox="0 0 100 100">
@@ -127,18 +430,19 @@
                                 stroke-dashoffset="251.33"
                                 stroke="#ef4444"></circle>
                     </svg>
-                    <div class="value" id="gaugeValue">--</div>
+                    <div class="value">
+                        <span class="number" id="gaugeValue">--</span>
+                        <span class="label" id="gaugeLabel">--</span>
+                    </div>
                 </div>
-                <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-2">Severity Score</p>
+                <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-2">Severity</p>
             </div>
 
-            <!-- Recommendation -->
             <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">AI Recommendation</p>
                 <p id="sheet-rec" class="text-sm font-semibold text-stone-900 leading-relaxed">--</p>
             </div>
 
-            <!-- Chart -->
             <div>
                 <h4 class="font-bold text-stone-900 text-sm mb-2">Severity Trend</h4>
                 <div class="h-40 relative bg-stone-50 p-2 rounded-2xl border border-stone-100">
@@ -146,7 +450,6 @@
                 </div>
             </div>
 
-            <!-- Timeline -->
             <div>
                 <h4 class="font-bold text-stone-900 text-sm mb-3">Scan Timeline</h4>
                 <div id="sheet-timeline" class="space-y-3"></div>
@@ -157,45 +460,91 @@
                 </div>
             </div>
 
-            <!-- Action Button -->
             <button onclick="goToAnalysis()" class="btn-native btn-native-primary w-full text-base mt-2">
                 <span>📸</span> Scan New Wound Picture
             </button>
         </div>
     </div>
 
+    <!-- ═══════ MODAL: CREATE NEW WOUND PROFILE ═══════ -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal-card">
+            <div class="modal-handle"></div>
+            <h2 class="text-xl font-extrabold text-stone-900 mb-1">New Wound Profile</h2>
+            <p class="modal-subtitle">Enter the patient's name to get started</p>
 
+            <form id="createWoundForm" onsubmit="handleCreateWound(event)">
+                <div class="space-y-5">
+                    <div>
+                        <label class="form-label">Patient Full Name</label>
+                        <input type="text" id="newName" class="form-input" placeholder="e.g. Ana Reyes" required autofocus>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeCreateModal()" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Create Profile</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="native-app.js"></script>
     <script>
-        const defaultPatients = [
-            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Condition: Diabetic Foot Ulcer | Barangay Health Unit Main", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe (7/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (3/10)", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate (5/10)", color: "text-amber-600", active: true }] },
-            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Condition: Surgical Wound | Barangay Health Unit Main", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Mild (4/10)", color: "text-emerald-600" }, { date: "May 30, 2026", severity: "Mild (2/10)", color: "text-emerald-600", active: true }] },
-            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Condition: Pressure Injury | Barangay Health Unit Main", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical (9/10)", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (4/10)", color: "text-emerald-600", active: true }] },
-            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Condition: Venous Ulcer | Barangay Health Unit Main", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild (3/10)", color: "text-emerald-600", active: true }] },
-            { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Condition: Thermal Burn | Barangay Health Unit Main", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe (8/10)", color: "text-red-700", active: true }] },
-            { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Condition: Fresh Laceration Intake | Barangay Health Unit Main", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
-        ];
-
-        function getPatients() {
-            let pts = localStorage.getItem('patch_perfect_patients');
-            if (!pts) {
-                localStorage.setItem('patch_perfect_patients', JSON.stringify(defaultPatients));
-                return defaultPatients;
-            }
-            return JSON.parse(pts);
+        // ── Helper: Single-word Severity Label ──
+        function getSeverityLabel(score) {
+            if (score === 0) return 'None';
+            if (score <= 2) return 'Mild';
+            if (score <= 4) return 'Moderate';
+            if (score <= 6) return 'Moderate';
+            if (score <= 8) return 'Severe';
+            return 'Critical';
         }
 
-        const patientDataArray = getPatients();
+        function getSeverityColor(score) {
+            if (score === 0) return '#78716c';
+            if (score <= 2) return '#16a34a';
+            if (score <= 4) return '#d97706';
+            if (score <= 6) return '#ea580c';
+            if (score <= 8) return '#dc2626';
+            return '#991b1b';
+        }
 
+        function getSeverityLabelClass(score) {
+            if (score === 0) return 'label-none';
+            if (score <= 2) return 'label-mild';
+            if (score <= 4) return 'label-moderate';
+            if (score <= 6) return 'label-moderate';
+            if (score <= 8) return 'label-severe';
+            return 'label-critical';
+        }
+
+        // ── Wound data ──
+        const defaultWounds = [
+            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Wound: Diabetic Foot Ulcer · Barangay Health Unit", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Wound: Surgical Wound · Barangay Health Unit", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Wound: Pressure Injury · Barangay Health Unit", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Wound: Venous Ulcer · Barangay Health Unit", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Wound: Thermal Burn · Barangay Health Unit", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe", color: "text-red-700", active: true }] },
+            { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Wound: Fresh Laceration Intake · Barangay Health Unit", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
+        ];
+
+        function getWounds() {
+            let stored = localStorage.getItem('patch_perfect_wounds');
+            if (!stored) {
+                localStorage.setItem('patch_perfect_wounds', JSON.stringify(defaultWounds));
+                return defaultWounds;
+            }
+            return JSON.parse(stored);
+        }
+
+        let woundDataArray = getWounds();
         let currentPage = 1;
         const itemsPerPage = 4;
-        let filteredPatientsList = [...patientDataArray];
+        let filteredWoundsList = [...woundDataArray];
         let activeSelectedId = null;
         let mobileChartInstance = null;
-        let patientBottomSheet = null;
+        let woundBottomSheet = null;
 
-        // Badge class mapping
         const badgeClasses = {
             danger: 'badge-danger',
             success: 'badge-success',
@@ -207,44 +556,144 @@
             return name.split(' ').map(w => w[0]).join('').substring(0, 2);
         }
 
-        function renderPatientGrid() {
-            document.getElementById('totalPatientBadge').innerText = `Total: ${patientDataArray.length}`;
-            const grid = document.getElementById('patientGrid');
+        // ── Tab Switching ──
+        function switchTab(tab) {
+            document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
+            if (tab === 'wounds') {
+                document.getElementById('nav-patients').classList.add('active');
+                document.getElementById('view-wounds').classList.remove('view-hidden');
+                document.getElementById('view-guidelines').classList.add('view-hidden');
+            } else if (tab === 'guidelines') {
+                document.getElementById('nav-guidelines').classList.add('active');
+                document.getElementById('view-wounds').classList.add('view-hidden');
+                document.getElementById('view-guidelines').classList.remove('view-hidden');
+                hideGuidelineDetail();
+            }
+            NativeApp.haptic('light');
+        }
+
+        // ── Guidelines ──
+        const guidelineData = {
+            diabetic: {
+                title: 'Diabetic Foot Ulcer',
+                content: `
+                    <p class="font-bold text-stone-800">Key Principles:</p>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong>Offloading:</strong> Use total contact casting or removable walkers to reduce pressure.</li>
+                        <li><strong>Debridement:</strong> Remove callus, necrotic tissue, and foreign material regularly.</li>
+                        <li><strong>Infection Control:</strong> Assess for signs of infection (redness, warmth, purulence). Consider systemic antibiotics if present.</li>
+                        <li><strong>Wound Dressing:</strong> Use moisture-retentive dressings (e.g., alginate, hydrogels) based on exudate level.</li>
+                        <li><strong>Glycemic Control:</strong> Maintain blood glucose levels to optimize healing.</li>
+                    </ul>
+                    <p class="text-xs text-stone-400 mt-2">Source: International Working Group on the Diabetic Foot (IWGDF)</p>
+                `
+            },
+            surgical: {
+                title: 'Surgical Wound',
+                content: `
+                    <p class="font-bold text-stone-800">Key Principles:</p>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong>Clean Technique:</strong> Maintain sterile field during dressing changes.</li>
+                        <li><strong>Drainage:</strong> Monitor for excessive drainage; change dressings when saturated.</li>
+                        <li><strong>Suture Care:</strong> Keep sutures clean and dry; remove according to protocol (typically 7-14 days).</li>
+                        <li><strong>Signs of Infection:</strong> Watch for fever, increasing pain, or wound dehiscence.</li>
+                        <li><strong>Nutrition:</strong> Ensure adequate protein and vitamin C intake for collagen synthesis.</li>
+                    </ul>
+                    <p class="text-xs text-stone-400 mt-2">Source: WHO Surgical Site Infection Guidelines</p>
+                `
+            },
+            pressure: {
+                title: 'Pressure Injury',
+                content: `
+                    <p class="font-bold text-stone-800">Key Principles:</p>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong>Repositioning:</strong> Change position every 2 hours to relieve pressure on bony prominences.</li>
+                        <li><strong>Support Surfaces:</strong> Use pressure-redistributing mattresses, cushions, or heel protectors.</li>
+                        <li><strong>Nutrition:</strong> Optimize protein, calories, and hydration to support tissue repair.</li>
+                        <li><strong>Wound Care:</strong> Clean with normal saline; use appropriate dressings based on stage (e.g., hydrocolloid for Stage 1, foam for Stage 2).</li>
+                        <li><strong>Moisture Management:</strong> Keep skin dry and use barrier creams to prevent maceration.</li>
+                    </ul>
+                    <p class="text-xs text-stone-400 mt-2">Source: NPUAP/EPUAP Pressure Ulcer Guidelines</p>
+                `
+            },
+            venous: {
+                title: 'Venous Ulcer',
+                content: `
+                    <p class="font-bold text-stone-800">Key Principles:</p>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong>Compression Therapy:</strong> Use multi-layer compression bandaging (30-40 mmHg at ankle) to improve venous return.</li>
+                        <li><strong>Elevation:</strong> Elevate legs above heart level whenever possible to reduce edema.</li>
+                        <li><strong>Wound Dressings:</strong> Use low-adherent, absorbent dressings; change every 1-3 days.</li>
+                        <li><strong>Skin Care:</strong> Apply emollients to surrounding skin to prevent dermatitis.</li>
+                        <li><strong>Exercise:</strong> Encourage walking and ankle exercises to promote calf muscle pump function.</li>
+                    </ul>
+                    <p class="text-xs text-stone-400 mt-2">Source: International Union of Angiology (IUA) Guidelines</p>
+                `
+            },
+            burn: {
+                title: 'Burn Injury',
+                content: `
+                    <p class="font-bold text-stone-800">Key Principles:</p>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong>Cooling:</strong> Run cool (not cold) water over the burn for 10-15 minutes to reduce heat and pain.</li>
+                        <li><strong>Dressing:</strong> Apply sterile, non-adherent dressings; change twice daily or when saturated.</li>
+                        <li><strong>Infection Prevention:</strong> Monitor for systemic signs (fever, chills); consider topical antimicrobials (e.g., silver sulfadiazine).</li>
+                        <li><strong>Pain Management:</strong> Administer analgesics before dressing changes.</li>
+                        <li><strong>Nutrition:</strong> Increase protein and calorie intake significantly (2-3x normal) for wound healing.</li>
+                    </ul>
+                    <p class="text-xs text-stone-400 mt-2">Source: American Burn Association (ABA) Guidelines</p>
+                `
+            }
+        };
+
+        function showGuidelineDetail(type) {
+            const data = guidelineData[type];
+            if (!data) return;
+            document.getElementById('detailTitle').textContent = data.title;
+            document.getElementById('detailContent').innerHTML = data.content;
+            document.getElementById('guidelineDetail').classList.remove('view-hidden');
+            document.getElementById('guidelineDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            NativeApp.haptic('medium');
+        }
+
+        function hideGuidelineDetail() {
+            document.getElementById('guidelineDetail').classList.add('view-hidden');
+        }
+
+        // ── Render Wounds ──
+        function renderWoundGrid() {
+            document.getElementById('totalWoundBadge').innerText = `Total: ${woundDataArray.length}`;
+            const grid = document.getElementById('woundGrid');
             grid.innerHTML = '';
 
-            if (filteredPatientsList.length === 0) {
+            if (filteredWoundsList.length === 0) {
                 document.getElementById('emptySearchState').classList.remove('hidden');
                 document.getElementById('paginationControls').classList.add('hidden');
                 return;
             }
-
             document.getElementById('emptySearchState').classList.add('hidden');
             document.getElementById('paginationControls').classList.remove('hidden');
 
             const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredPatientsList.length);
-            const paginatedItems = filteredPatientsList.slice(startIndex, endIndex);
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredWoundsList.length);
+            const paginatedItems = filteredWoundsList.slice(startIndex, endIndex);
 
-            paginatedItems.forEach(patient => {
-                const isSelected = patient.id === activeSelectedId;
+            paginatedItems.forEach(wound => {
                 const card = document.createElement('div');
-                card.className = `native-card cursor-pointer p-4 transition ${isSelected ? 'selected' : ''}`;
-                
-                card.setAttribute('onclick', `selectPatient(${patient.id})`);
+                card.className = `native-card cursor-pointer p-4 transition ${wound.id === activeSelectedId ? 'selected' : ''}`;
+                card.setAttribute('onclick', `selectWound(${wound.id})`);
                 card.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <div class="patient-avatar flex-shrink-0">
-                            ${getInitials(patient.name)}
-                        </div>
+                        <div class="patient-avatar flex-shrink-0">${getInitials(wound.name)}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-                                <h3 class="font-bold text-stone-900 text-[15px] truncate">${patient.name}</h3>
-                                <span class="text-[10px] text-stone-400 font-semibold flex-shrink-0">#${patient.pId}</span>
+                                <h3 class="font-bold text-stone-900 text-[15px] truncate">${wound.name}</h3>
+                                <span class="text-[10px] text-stone-400 font-semibold flex-shrink-0">#${wound.pId}</span>
                             </div>
-                            <p class="text-xs text-stone-500 mt-0.5">${patient.condition}</p>
+                            <p class="text-xs text-stone-500 mt-0.5">${wound.condition}</p>
                             <div class="flex items-center justify-between mt-2.5">
-                                <span class="badge-native ${badgeClasses[patient.badgeType] || 'badge-info'}">${patient.badgeText}</span>
-                                <span class="text-[10px] text-stone-400 font-medium">${patient.lastChecked}</span>
+                                <span class="badge-native ${badgeClasses[wound.badgeType] || 'badge-info'}">${wound.badgeText}</span>
+                                <span class="text-[10px] text-stone-400 font-medium">${wound.lastChecked}</span>
                             </div>
                         </div>
                     </div>
@@ -252,43 +701,39 @@
                 grid.appendChild(card);
             });
 
-            // Trigger stagger animation
-            NativeApp.staggerIn('#patientGrid');
-
-            document.getElementById('paginationInfo').innerText = `Showing ${startIndex + 1} to ${endIndex} of ${filteredPatientsList.length}`;
+            NativeApp.staggerIn('#woundGrid');
+            document.getElementById('paginationInfo').innerText = `Showing ${startIndex + 1} to ${endIndex} of ${filteredWoundsList.length}`;
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
-            document.getElementById('nextPageBtn').disabled = endIndex >= filteredPatientsList.length;
-            
-            // Style disabled buttons
+            document.getElementById('nextPageBtn').disabled = endIndex >= filteredWoundsList.length;
             document.getElementById('prevPageBtn').style.opacity = currentPage === 1 ? '0.4' : '1';
-            document.getElementById('nextPageBtn').style.opacity = endIndex >= filteredPatientsList.length ? '0.4' : '1';
+            document.getElementById('nextPageBtn').style.opacity = endIndex >= filteredWoundsList.length ? '0.4' : '1';
         }
 
         function changePage(direction) {
             currentPage += direction;
             NativeApp.haptic('light');
-            renderPatientGrid();
+            renderWoundGrid();
         }
 
-        function filterPatients() {
+        function filterWounds() {
             const query = document.getElementById('patientSearch').value.toLowerCase().trim();
-            filteredPatientsList = patientDataArray.filter(p => p.name.toLowerCase().includes(query) || p.pId.includes(query));
+            filteredWoundsList = woundDataArray.filter(w => w.name.toLowerCase().includes(query) || w.pId.includes(query));
             currentPage = 1;
-            renderPatientGrid();
+            renderWoundGrid();
         }
 
-        function selectPatient(id) {
+        function selectWound(id) {
             activeSelectedId = id;
             NativeApp.haptic('medium');
-            const data = patientDataArray.find(p => p.id === id);
-            openPatientSheet(data);
-            renderPatientGrid();
+            const data = woundDataArray.find(w => w.id === id);
+            if (data) openWoundSheet(data);
+            renderWoundGrid();
         }
 
-        // ── Mobile: Bottom Sheet ──
-        function openPatientSheet(data) {
-            document.getElementById('sheet-patient-name').innerText = `${data.name}'s Record`;
-            document.getElementById('sheet-patient-meta').innerText = data.meta;
+        // ── Bottom Sheet ──
+        function openWoundSheet(data) {
+            document.getElementById('sheet-wound-name').innerText = `${data.name}'s Wound`;
+            document.getElementById('sheet-wound-meta').innerText = data.meta;
 
             const gaugeWrap = document.getElementById('sheet-gauge-wrap');
             const timeline = document.getElementById('sheet-timeline');
@@ -303,25 +748,28 @@
                 gaugeWrap.classList.remove('hidden');
                 emptyTimeline.classList.add('hidden');
 
-                // Gauge
+                const score = data.latestScore;
+                const label = getSeverityLabel(score);
+                const color = getSeverityColor(score);
+                const labelClass = getSeverityLabelClass(score);
+                
                 const circumference = 2 * Math.PI * 40;
-                const offset = circumference - (data.latestScore / 10) * circumference;
+                const offset = circumference - (score / 10) * circumference;
                 const gaugeCircle = document.getElementById('gaugeCircle');
-                const gaugeColor = data.latestScore >= 7 ? '#dc2626' : data.latestScore >= 4 ? '#d97706' : '#16a34a';
-                gaugeCircle.setAttribute('stroke', gaugeColor);
-                // Animate gauge
-                setTimeout(() => {
-                    gaugeCircle.setAttribute('stroke-dashoffset', offset);
-                }, 100);
-                document.getElementById('gaugeValue').innerText = `${data.latestScore}`;
-
+                gaugeCircle.setAttribute('stroke', color);
+                setTimeout(() => gaugeCircle.setAttribute('stroke-dashoffset', offset), 100);
+                
+                document.getElementById('gaugeValue').innerText = score;
+                const labelEl = document.getElementById('gaugeLabel');
+                labelEl.innerText = label;
+                labelEl.className = `label ${labelClass}`;
                 document.getElementById('sheet-rec').innerText = data.recText;
 
-                // Timeline
                 timeline.innerHTML = '';
-                data.history.forEach((entry, index) => {
+                data.history.forEach((entry) => {
                     const item = document.createElement('div');
                     item.className = `timeline-item ${entry.active ? 'active' : ''} pb-3`;
+                    // entry.severity is already the single-word label
                     item.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div>
@@ -334,7 +782,6 @@
                     timeline.appendChild(item);
                 });
 
-                // Chart
                 if (mobileChartInstance) mobileChartInstance.destroy();
                 const ctx = document.getElementById('progressionChartMobile').getContext('2d');
                 mobileChartInstance = new Chart(ctx, {
@@ -345,7 +792,7 @@
                             label: 'Severity',
                             data: data.scores,
                             borderColor: '#991b1b',
-                            backgroundColor: 'rgba(153, 27, 27, 0.08)',
+                            backgroundColor: 'rgba(153,27,27,0.08)',
                             borderWidth: 2.5,
                             fill: true,
                             tension: 0.3,
@@ -365,56 +812,100 @@
                 });
             }
 
-            // Reset gauge for animation
             document.getElementById('gaugeCircle').setAttribute('stroke-dashoffset', '251.33');
-            
-            patientBottomSheet.open();
-
-            // Re-animate gauge after sheet opens
+            woundBottomSheet.open();
             if (data.history.length > 0) {
+                const score = data.latestScore;
                 const circumference = 2 * Math.PI * 40;
-                const offset = circumference - (data.latestScore / 10) * circumference;
-                setTimeout(() => {
-                    document.getElementById('gaugeCircle').setAttribute('stroke-dashoffset', offset);
-                }, 400);
+                const offset = circumference - (score / 10) * circumference;
+                setTimeout(() => document.getElementById('gaugeCircle').setAttribute('stroke-dashoffset', offset), 400);
             }
         }
 
-
-
         function goToAnalysis() {
-            const currentPatient = patientDataArray.find(p => p.id === activeSelectedId);
+            const currentWound = woundDataArray.find(w => w.id === activeSelectedId);
             NativeApp.haptic('medium');
-            const nameParam = currentPatient ? `?name=${encodeURIComponent(currentPatient.name)}` : '';
+            const nameParam = currentWound ? `?name=${encodeURIComponent(currentWound.name)}` : '';
             window.location.href = `analysis.html${nameParam}`;
         }
 
+        // ── MODAL: Create New Wound ──
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('open');
+            setTimeout(() => document.getElementById('newName').focus(), 300);
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('open');
+        }
+
+        function handleCreateWound(e) {
+            e.preventDefault();
+            const name = document.getElementById('newName').value.trim();
+
+            if (!name) {
+                NativeApp.showToast('⚠️ Please enter a patient name');
+                return;
+            }
+
+            const maxId = woundDataArray.reduce((max, w) => Math.max(max, w.id), 0);
+            const newId = maxId + 1;
+            const pId = String(100 + newId).slice(1);
+
+            const newWound = {
+                id: newId,
+                pId: pId,
+                name: name,
+                condition: 'New Wound',
+                badgeText: 'New',
+                badgeType: 'info',
+                lastChecked: 'Just now',
+                meta: `Wound: New · Barangay Health Unit`,
+                latestScore: 0,
+                recText: 'No scans yet. Tap "Scan Wound" to begin assessment.',
+                scores: [],
+                labels: [],
+                history: []
+            };
+
+            woundDataArray.push(newWound);
+            localStorage.setItem('patch_perfect_wounds', JSON.stringify(woundDataArray));
+            filteredWoundsList = [...woundDataArray];
+            currentPage = 1;
+            renderWoundGrid();
+            closeCreateModal();
+            NativeApp.showToast(`✅ Profile created for ${name}`);
+            document.getElementById('createWoundForm').reset();
+        }
+
+        document.getElementById('createModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCreateModal();
+        });
+
+        // ── Init ──
         window.onload = () => {
-            // Init NativeApp
             NativeApp.init({
                 pullToRefresh: () => {
-                    NativeApp.showToast('🔄 Refreshing patient data...');
+                    NativeApp.showToast('🔄 Refreshing wound data...');
                     setTimeout(() => {
-                        renderPatientGrid();
+                        renderWoundGrid();
                         NativeApp.showToast('✅ Data refreshed');
                     }, 800);
                 }
             });
 
-            // Init bottom sheet
-            patientBottomSheet = new NativeApp.BottomSheet(
-                document.getElementById('patientSheet'),
+            woundBottomSheet = new NativeApp.BottomSheet(
+                document.getElementById('woundSheet'),
                 document.getElementById('sheetOverlay')
             );
 
-            // Show install button if deferred prompt is available
             window.addEventListener('beforeinstallprompt', () => {
                 const btn = document.getElementById('installBtn');
                 if (btn) btn.style.display = '';
             });
 
-            // Render
-            renderPatientGrid();
+            renderWoundGrid();
+            document.getElementById('view-guidelines').classList.add('view-hidden');
         };
     </script>
 </body>
