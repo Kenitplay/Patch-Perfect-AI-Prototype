@@ -14,6 +14,488 @@
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="native-mobile.css">
+    <style>
+        .wound-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .wound-badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .wound-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .wound-badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .patient-avatar {
+            background: #991b1b;
+            color: white;
+            font-weight: 700;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .bottom-nav .scan-tab .nav-icon-wrap {
+            background: #991b1b;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -12px;
+            box-shadow: 0 4px 12px rgba(153,27,27,0.25);
+        }
+        .bottom-nav-item.inactive {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .severity-gauge {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .severity-gauge svg {
+            transform: rotate(-90deg);
+            width: 110px;
+            height: 110px;
+        }
+        .severity-gauge .track {
+            fill: none;
+            stroke: #e7e5e4;
+            stroke-width: 8;
+        }
+        .severity-gauge .fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .severity-gauge .value {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1c1917;
+        }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 0;
+        }
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .step-dot.active {
+            background: #991b1b;
+            color: white;
+        }
+        .step-dot.completed {
+            background: #16a34a;
+            color: white;
+        }
+        .step-dot.pending {
+            background: #e7e5e4;
+            color: #78716c;
+        }
+        .step-line {
+            width: 32px;
+            height: 2px;
+            background: #e7e5e4;
+            transition: all 0.3s ease;
+        }
+        .step-line.completed {
+            background: #16a34a;
+        }
+        .camera-area {
+            border: 2px dashed #d6d3d1;
+            border-radius: 20px;
+            padding: 32px 16px;
+            text-align: center;
+            background: #fafaf9;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .camera-area.has-image {
+            border-color: #991b1b;
+            background: #fef2f2;
+            padding: 8px;
+        }
+        .camera-area:active {
+            transform: scale(0.98);
+        }
+        .camera-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .capture-preview {
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #1c1917;
+        }
+        .camera-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding-top: 12px;
+        }
+        .btn-retake {
+            background: #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            font-size: 14px;
+            flex: 1;
+        }
+        .btn-confirm {
+            background: #991b1b;
+            color: white;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            font-size: 14px;
+            flex: 1;
+        }
+        .btn-confirm:active {
+            background: #7f1d1d;
+        }
+        .btn-retake:active {
+            background: #e2e8f0;
+        }
+        .analysis-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+        .badge-native {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .btn-native-primary {
+            background: #991b1b;
+            color: white;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 40px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .btn-native-primary:active {
+            background: #7f1d1d;
+        }
+        .btn-native-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn-native-secondary:active {
+            background: #e2e8f0;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+        }
+        .empty-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .empty-title {
+            font-weight: 700;
+            color: #1c1917;
+            font-size: 16px;
+        }
+        .empty-desc {
+            color: #78716c;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .native-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid #e7e5e4;
+        }
+        .stagger-enter > * {
+            animation: fadeUp 0.4s ease both;
+        }
+        .stagger-enter > *:nth-child(1) { animation-delay: 0.05s; }
+        .stagger-enter > *:nth-child(2) { animation-delay: 0.1s; }
+        .stagger-enter > *:nth-child(3) { animation-delay: 0.15s; }
+        .stagger-enter > *:nth-child(4) { animation-delay: 0.2s; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-enter {
+            animation: fadeUp 0.4s ease both;
+        }
+        /* Confirmation overlay styles */
+        .confirmation-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+        .confirmation-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .confirmation-card {
+            background: white;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 400px;
+            width: 100%;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .confirmation-overlay.open .confirmation-card {
+            transform: scale(1);
+        }
+        .confirmation-card .icon {
+            font-size: 48px;
+            text-align: center;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .confirmation-card h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1c1917;
+            text-align: center;
+        }
+        .confirmation-card p {
+            color: #78716c;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+        .confirmation-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .confirmation-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            transition: background 0.2s;
+        }
+        .confirmation-actions .btn-cancel {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .confirmation-actions .btn-cancel:active {
+            background: #e2e8f0;
+        }
+        .confirmation-actions .btn-confirm-wound {
+            background: #991b1b;
+            color: white;
+        }
+        .confirmation-actions .btn-confirm-wound:active {
+            background: #7f1d1d;
+        }
+        .confirmation-actions .btn-reject {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .confirmation-actions .btn-reject:active {
+            background: #fecaca;
+        }
+
+        /* Patient search & list styles */
+        .patient-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid #e7e5e4;
+            border-radius: 16px;
+            font-size: 15px;
+            background: #fafaf9;
+            transition: border 0.2s, background 0.2s;
+            outline: none;
+        }
+        .patient-search-input:focus {
+            border-color: #991b1b;
+            background: white;
+        }
+        .patient-search-wrap {
+            position: relative;
+        }
+        .patient-search-wrap .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #78716c;
+        }
+        .patient-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid #e7e5e4;
+            background: white;
+        }
+        .patient-list-item {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s;
+        }
+        .patient-list-item:last-child {
+            border-bottom: none;
+        }
+        .patient-list-item:active {
+            background: #fef2f2;
+        }
+        .patient-list-item.selected {
+            background: #fef2f2;
+            border-left: 3px solid #991b1b;
+        }
+        .patient-list-item .avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 32px;
+            background: #991b1b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .patient-list-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .patient-list-item .info .name {
+            font-weight: 700;
+            color: #1c1917;
+            font-size: 14px;
+        }
+        .patient-list-item .info .condition {
+            font-size: 11px;
+            color: #78716c;
+        }
+        .patient-list-item .badge-mini {
+            font-size: 9px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-mini.danger { background: #fee2e2; color: #991b1b; }
+        .badge-mini.success { background: #dcfce7; color: #166534; }
+        .badge-mini.info { background: #dbeafe; color: #1e40af; }
+        .badge-mini.warning { background: #fef3c7; color: #92400e; }
+        .patient-list-empty {
+            padding: 20px;
+            text-align: center;
+            color: #78716c;
+            font-size: 13px;
+        }
+        .selected-patient-display {
+            background: #fef2f2;
+            border: 2px solid #991b1b;
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .selected-patient-display .name {
+            font-weight: 700;
+            color: #1c1917;
+            font-size: 15px;
+        }
+        .selected-patient-display .id {
+            font-size: 11px;
+            color: #78716c;
+        }
+    </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans pb-24">
 
@@ -33,7 +515,7 @@
     <!-- ═══════ MOBILE BOTTOM NAV ═══════ -->
     <nav class="bottom-nav" id="bottomNav">
         <div class="bottom-nav-inner">
-            <a href="index.html" class="bottom-nav-item inactive" id="nav-patients">
+            <a href="index.html" class="bottom-nav-item inactive" id="nav-patients" onclick="switchTab('wounds')">
                 <span class="nav-icon">📋</span>
                 <span class="nav-label">Patients</span>
             </a>
@@ -43,7 +525,7 @@
                 </div>
                 <span class="nav-label">Scan</span>
             </a>
-            <a href="guidelines.html" class="bottom-nav-item inactive" id="nav-guidelines">
+            <a href="guidelines.html" class="bottom-nav-item inactive" id="nav-guidelines" onclick="switchTab('guidelines')">
                 <span class="nav-icon">🛡️</span>
                 <span class="nav-label">Guidelines</span>
             </a>
@@ -53,58 +535,50 @@
     <!-- ═══════ MAIN CONTENT ═══════ -->
     <main class="max-w-4xl mx-auto p-4 space-y-4 page-enter">
         
-        <!-- ── Patient Selection Bar ── -->
+        <!-- ── Patient Selection (Improved) ── -->
         <div class="native-card p-4 space-y-3">
-            <div class="flex items-center gap-3">
-                <div class="patient-avatar" id="patientAvatar">??</div>
+            <p class="text-[10px] font-bold text-red-700 uppercase tracking-wider">Step 1: Select Patient</p>
+            
+            <!-- Selected Patient Display -->
+            <div id="selectedPatientDisplay" class="selected-patient-display hidden">
+                <div class="patient-avatar" id="patientAvatar" style="width:36px;height:36px;font-size:14px;">??</div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-[10px] font-bold text-red-700 uppercase tracking-wider">Active Patient Target</p>
-                    <h2 id="patientNameDisplay" class="text-base font-extrabold text-stone-900 truncate tracking-tight">Select Target Patient</h2>
+                    <div class="name" id="patientNameDisplay">Select a patient</div>
+                    <div class="id" id="patientIdDisplay">#---</div>
                 </div>
+                <button onclick="clearSelectedPatient()" class="text-stone-400 text-sm font-bold px-2">✕</button>
             </div>
 
-            <!-- Dropdown Selector -->
-            <div class="space-y-1.5 pt-1">
-                <label for="patientSelector" class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">Change or Select Patient</label>
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <select id="patientSelector" onchange="handlePatientSelection()" class="w-full border border-stone-200 rounded-xl text-sm bg-stone-50 p-3 font-semibold text-stone-700 min-h-[48px] appearance-none cursor-pointer">
-                            <!-- Options populated via JS -->
-                        </select>
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">▼</span>
-                    </div>
-                    <button onclick="showAddNewPatientForm()" class="btn-native-secondary px-4 rounded-xl text-xs font-bold whitespace-nowrap min-h-[48px]">
-                        + New
+            <!-- Search Bar -->
+            <div class="patient-search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="patientSearchInput" class="patient-search-input" placeholder="Search by name or ID..." oninput="filterPatientList()" onfocus="showPatientList()">
+            </div>
+
+            <!-- Patient List -->
+            <div id="patientListContainer" class="patient-list hidden">
+                <div id="patientListContent"></div>
+                <div class="p-2 border-t border-stone-100">
+                    <button onclick="showAddNewPatientForm()" class="w-full text-left text-sm font-semibold text-red-700 px-2 py-1.5 rounded-lg hover:bg-red-50 transition flex items-center gap-2">
+                        <span>➕</span> Add New Patient
                     </button>
                 </div>
             </div>
 
-            <!-- Inline Add New Patient Form -->
+            <!-- Simplified Add New Patient Form -->
             <div id="newPatientForm" class="hidden bg-stone-100/50 p-3.5 rounded-xl border border-stone-200/60 space-y-3 stagger-enter">
                 <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider">Add New Patient</h4>
                 <div class="space-y-2">
-                    <input type="text" id="newPatientName" placeholder="Patient Full Name" class="w-full border border-stone-200 rounded-xl text-xs bg-white p-3 font-semibold text-stone-800">
-                    <div class="relative">
-                        <select id="newPatientCondition" class="w-full border border-stone-200 rounded-xl text-xs bg-white p-3 font-semibold text-stone-700 min-h-[44px] appearance-none cursor-pointer">
-                            <option value="" disabled selected>-- Select Wound Condition --</option>
-                            <option value="Diabetic Foot Ulcer">Diabetic Foot Ulcer</option>
-                            <option value="Surgical Wound">Surgical Wound</option>
-                            <option value="Pressure Injury">Pressure Injury</option>
-                            <option value="Venous Ulcer">Venous Ulcer</option>
-                            <option value="Burn Injury">Burn Injury</option>
-                            <option value="Laceration">Laceration</option>
-                        </select>
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">▼</span>
-                    </div>
+                    <input type="text" id="newPatientName" placeholder="Patient Full Name" class="w-full border border-stone-200 rounded-xl text-sm bg-white p-3 font-semibold text-stone-800">
                 </div>
                 <div class="flex gap-2 justify-end">
                     <button onclick="hideAddNewPatientForm()" class="btn-native-secondary px-3 py-1.5 rounded-lg text-xs font-semibold min-h-[36px]">Cancel</button>
-                    <button onclick="createNewPatient()" class="btn-native-primary px-4 py-1.5 rounded-lg text-xs font-semibold min-h-[36px]">Create & Select</button>
+                    <button onclick="createNewPatient()" class="btn-native-primary px-4 py-1.5 rounded-lg text-xs font-semibold min-h-[36px]" style="width:auto;">Create & Select</button>
                 </div>
             </div>
         </div>
 
-        <!-- ── Step Indicator (Mobile) ── -->
+        <!-- ── Step Indicator ── -->
         <div class="step-indicator" id="stepIndicator">
             <div class="step-dot active" id="step1">1</div>
             <div class="step-line" id="line1"></div>
@@ -113,7 +587,7 @@
             <div class="step-dot pending" id="step3">3</div>
         </div>
 
-        <!-- ── Step 1: Upload ── -->
+        <!-- ── Step 2: Upload ── -->
         <div class="native-card p-4 sm:p-6 space-y-4" id="uploadSection">
             <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Upload Picture</h3>
 
@@ -133,7 +607,7 @@
             <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageCapture(event)">
             <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImageCapture(event)">
 
-            <!-- Camera Actions (show after capture) -->
+            <!-- Camera Actions -->
             <div id="cameraActionsWrap" class="hidden camera-actions">
                 <button class="btn-retake" onclick="retakePhoto()">↻ Retake</button>
                 <button class="btn-confirm" onclick="confirmPhoto()">✓ Confirm</button>
@@ -145,7 +619,7 @@
             </button>
         </div>
 
-        <!-- ── Step 2: Analysis Loading ── -->
+        <!-- ── Step 3: Analysis Loading ── -->
         <div id="analysisLoading" class="hidden native-card p-6 text-center space-y-4">
             <div class="mx-auto w-16 h-16 rounded-full bg-red-50 flex items-center justify-center analysis-pulse">
                 <span class="text-3xl">🧠</span>
@@ -159,11 +633,11 @@
             </div>
         </div>
 
-        <!-- ── Step 3: Results ── -->
+        <!-- ── Step 4: Results ── -->
         <div class="native-card p-4 sm:p-6 space-y-4" id="resultsSection">
             <div class="flex justify-between items-center border-b border-stone-100 pb-3 gap-2">
                 <h3 class="text-base sm:text-lg font-extrabold text-stone-900">Analysis Result</h3>
-                <span id="statusBadge" class="badge-native badge-warning">Waiting for Picture</span>
+                <span id="statusBadge" class="badge-native badge-warning">Waiting</span>
             </div>
 
             <div id="placeholderScreen" class="empty-state py-6">
@@ -224,14 +698,127 @@
 
     </main>
 
+    <!-- ═══════ CONFIRMATION OVERLAY ═══════ -->
+    <div class="confirmation-overlay" id="confirmationOverlay">
+        <div class="confirmation-card">
+            <span class="icon">⚠️</span>
+            <h3>Different Wound Detected</h3>
+            <p>The newly uploaded wound appears different from the previously recorded wound for this patient.</p>
+            <p style="font-size:13px; margin-top:8px; color:#78716c;">Would you like to update the patient's wound record?</p>
+            <div class="confirmation-actions">
+                <button class="btn-cancel" onclick="rejectNewWound()">Cancel</button>
+                <button class="btn-confirm-wound" onclick="confirmNewWound()">Yes, Update</button>
+            </div>
+        </div>
+    </div>
+
     <script src="native-app.js"></script>
     <script>
         let imageConfirmed = false;
+        let photoDataURL = null;
+        let pendingAnalysis = false;
+        let isFirstScan = true;
+        let activePatientsList = [];
+        let activeSelectedId = null;
+        let filteredPatients = [];
 
-        // Camera trigger
-        function triggerCamera() {
+        // ── Patient Search & Selection ──
+        function filterPatientList() {
+            const query = document.getElementById('patientSearchInput').value.toLowerCase().trim();
+            const container = document.getElementById('patientListContainer');
+            
+            if (!query) {
+                filteredPatients = [...activePatientsList];
+            } else {
+                filteredPatients = activePatientsList.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    p.pId.includes(query)
+                );
+            }
+            
+            renderPatientList();
+            container.classList.remove('hidden');
+        }
+
+        function showPatientList() {
+            const container = document.getElementById('patientListContainer');
+            if (activePatientsList.length > 0) {
+                filteredPatients = [...activePatientsList];
+                renderPatientList();
+                container.classList.remove('hidden');
+            }
+        }
+
+        function renderPatientList() {
+            const content = document.getElementById('patientListContent');
+            content.innerHTML = '';
+            
+            if (filteredPatients.length === 0) {
+                content.innerHTML = `<div class="patient-list-empty">No patients found</div>`;
+                return;
+            }
+            
+            filteredPatients.forEach(p => {
+                const div = document.createElement('div');
+                div.className = `patient-list-item ${p.id === activeSelectedId ? 'selected' : ''}`;
+                div.innerHTML = `
+                    <div class="avatar-small">${p.name.split(' ').map(w => w[0]).join('').substring(0,2)}</div>
+                    <div class="info">
+                        <div class="name">${p.name}</div>
+                        <div class="condition">${p.condition} · #${p.pId}</div>
+                    </div>
+                    <span class="badge-mini ${p.badgeType || 'info'}">${p.badgeText || 'New'}</span>
+                `;
+                div.onclick = () => selectPatientFromList(p.id);
+                content.appendChild(div);
+            });
+        }
+
+        function selectPatientFromList(id) {
+            activeSelectedId = parseInt(id);
+            const data = activePatientsList.find(p => p.id === activeSelectedId);
+            if (!data) return;
+            
+            // Update display
+            document.getElementById('patientNameDisplay').innerText = data.name;
+            document.getElementById('patientIdDisplay').innerText = `#${data.pId}`;
+            document.getElementById('patientAvatar').innerText = data.name.split(' ').map(w => w[0]).join('').substring(0, 2);
+            document.getElementById('selectedPatientDisplay').classList.remove('hidden');
+            
+            // Update search input
+            document.getElementById('patientSearchInput').value = data.name;
+            
+            // Hide list
+            document.getElementById('patientListContainer').classList.add('hidden');
+            
+            isFirstScan = (data.history && data.history.length === 0);
             NativeApp.haptic('light');
-            // On mobile, prefer camera; on desktop, use file picker
+            
+            // Reset photo state when switching patients
+            if (photoDataURL) {
+                retakePhoto();
+            }
+        }
+
+        function clearSelectedPatient() {
+            activeSelectedId = null;
+            document.getElementById('selectedPatientDisplay').classList.add('hidden');
+            document.getElementById('patientSearchInput').value = '';
+            document.getElementById('patientListContainer').classList.remove('hidden');
+            filteredPatients = [...activePatientsList];
+            renderPatientList();
+            if (photoDataURL) retakePhoto();
+        }
+
+        // ── Camera Functions ──
+        function triggerCamera() {
+            if (!activeSelectedId) {
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Please select a patient first');
+                document.getElementById('patientSearchInput').focus();
+                return;
+            }
+            NativeApp.haptic('light');
             const isMobile = /Mobi|Android/i.test(navigator.userAgent);
             if (isMobile) {
                 document.getElementById('cameraInput').click();
@@ -240,7 +827,6 @@
             }
         }
 
-        // Handle image capture/selection
         function handleImageCapture(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -248,7 +834,8 @@
             NativeApp.haptic('success');
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('capturedImage').src = e.target.result;
+                photoDataURL = e.target.result;
+                document.getElementById('capturedImage').src = photoDataURL;
                 document.getElementById('cameraPlaceholder').classList.add('hidden');
                 document.getElementById('imagePreview').classList.remove('hidden');
                 document.getElementById('cameraActionsWrap').classList.remove('hidden');
@@ -260,6 +847,7 @@
 
         function retakePhoto() {
             NativeApp.haptic('light');
+            photoDataURL = null;
             document.getElementById('cameraPlaceholder').classList.remove('hidden');
             document.getElementById('imagePreview').classList.add('hidden');
             document.getElementById('cameraActionsWrap').classList.add('hidden');
@@ -268,6 +856,7 @@
             document.getElementById('cameraInput').value = '';
             document.getElementById('fileInput').value = '';
             imageConfirmed = false;
+            pendingAnalysis = false;
         }
 
         function confirmPhoto() {
@@ -277,7 +866,43 @@
             NativeApp.showToast('✅ Photo confirmed');
         }
 
-        // Update step indicator
+        // ── Wound Confirmation Logic ──
+        function checkForWoundChange() {
+            if (!activeSelectedId) return true;
+            const patient = activePatientsList.find(p => p.id === activeSelectedId);
+            if (!patient) return true;
+            if (patient.history && patient.history.length > 0) {
+                const lastScan = patient.history[0];
+                if (lastScan) {
+                    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+                    if (lastScan.date === today) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function showWoundConfirmation() {
+            document.getElementById('confirmationOverlay').classList.add('open');
+            NativeApp.haptic('medium');
+        }
+
+        function confirmNewWound() {
+            document.getElementById('confirmationOverlay').classList.remove('open');
+            NativeApp.haptic('success');
+            runAnalysis();
+        }
+
+        function rejectNewWound() {
+            document.getElementById('confirmationOverlay').classList.remove('open');
+            NativeApp.haptic('light');
+            retakePhoto();
+            NativeApp.showToast('📸 Please retake the photo');
+        }
+
+        // ── Step Indicator ──
         function setStep(stepNum) {
             for (let i = 1; i <= 3; i++) {
                 const dot = document.getElementById(`step${i}`);
@@ -300,17 +925,15 @@
             }
         }
 
-        let activePatientsList = [];
-        let activeSelectedId = null;
-
+        // ── Patient Data ──
         function getPatients() {
             const defaultPatients = [
-                { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Condition: Diabetic Foot Ulcer | Barangay Health Unit Main", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe (7/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (3/10)", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate (5/10)", color: "text-amber-600", active: true }] },
-                { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Condition: Surgical Wound | Barangay Health Unit Main", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Mild (4/10)", color: "text-emerald-600" }, { date: "May 30, 2026", severity: "Mild (2/10)", color: "text-emerald-600", active: true }] },
-                { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Condition: Pressure Injury | Barangay Health Unit Main", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical (9/10)", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe (8/10)", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild (4/10)", color: "text-emerald-600", active: true }] },
-                { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Condition: Venous Ulcer | Barangay Health Unit Main", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate (6/10)", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild (3/10)", color: "text-emerald-600", active: true }] },
-                { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Condition: Thermal Burn | Barangay Health Unit Main", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate (5/10)", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe (8/10)", color: "text-red-700", active: true }] },
-                { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Condition: Fresh Laceration Intake | Barangay Health Unit Main", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
+                { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Diabetic Foot Ulcer", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+                { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Surgical Wound", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+                { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Pressure Injury", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+                { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Venous Ulcer", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+                { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Thermal Burn", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe", color: "text-red-700", active: true }] },
+                { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Fresh Laceration", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
             ];
             let pts = localStorage.getItem('patch_perfect_patients');
             if (!pts) {
@@ -320,87 +943,43 @@
             return JSON.parse(pts);
         }
 
-        function populatePatientDropdown(selectedId = null) {
-            const selector = document.getElementById('patientSelector');
-            selector.innerHTML = '';
-            
-            // Add a default unselected option if nothing is chosen
-            const defaultOpt = document.createElement('option');
-            defaultOpt.value = "";
-            defaultOpt.disabled = true;
-            if (!selectedId) {
-                defaultOpt.selected = true;
-            }
-            defaultOpt.innerText = "-- Select Target Patient --";
-            selector.appendChild(defaultOpt);
-
-            activePatientsList.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.innerText = `${p.name} (#${p.pId})`;
-                if (p.id === selectedId) {
-                    opt.selected = true;
-                }
-                selector.appendChild(opt);
-            });
-        }
-
-        function selectPatient(id) {
-            activeSelectedId = parseInt(id);
-            const data = activePatientsList.find(p => p.id === activeSelectedId);
-            if (!data) return;
-
-            // Update top profile display
-            document.getElementById('patientNameDisplay').innerText = data.name;
-            document.getElementById('patientAvatar').innerText = data.name.split(' ').map(w => w[0]).join('').substring(0, 2);
-        }
-
-        function handlePatientSelection() {
-            const selector = document.getElementById('patientSelector');
-            const selectedId = selector.value;
-            if (selectedId) {
-                NativeApp.haptic('light');
-                selectPatient(selectedId);
-            }
-        }
-
+        // ── Add New Patient ──
         function showAddNewPatientForm() {
             NativeApp.haptic('light');
             document.getElementById('newPatientForm').classList.remove('hidden');
             document.getElementById('newPatientName').focus();
+            document.getElementById('patientListContainer').classList.add('hidden');
         }
 
         function hideAddNewPatientForm() {
             NativeApp.haptic('light');
             document.getElementById('newPatientForm').classList.add('hidden');
             document.getElementById('newPatientName').value = '';
-            document.getElementById('newPatientCondition').value = '';
         }
 
         function createNewPatient() {
             const name = document.getElementById('newPatientName').value.trim();
-            const condition = document.getElementById('newPatientCondition').value;
 
-            if (!name || !condition) {
+            if (!name) {
                 NativeApp.haptic('error');
-                NativeApp.showToast('⚠️ Fill in patient name and condition');
+                NativeApp.showToast('⚠️ Please enter a patient name');
                 return;
             }
 
             NativeApp.haptic('success');
             
-            const pId = Math.floor(100 + Math.random() * 900).toString();
+            const pId = String(100 + Math.floor(Math.random() * 900));
             const newId = activePatientsList.length > 0 ? Math.max(...activePatientsList.map(p => p.id)) + 1 : 1;
 
             const newPatient = {
                 id: newId,
                 pId: pId,
                 name: name,
-                condition: condition,
-                badgeText: "New Patient",
+                condition: 'New Wound',
+                badgeText: "New",
                 badgeType: "info",
                 lastChecked: "Just Added",
-                meta: `Condition: ${condition} | Barangay Health Unit Main`,
+                meta: "New Wound",
                 latestScore: 0,
                 recText: "No diagnostic images uploaded yet. Run first baseline check.",
                 scores: [],
@@ -411,12 +990,14 @@
             activePatientsList.push(newPatient);
             localStorage.setItem('patch_perfect_patients', JSON.stringify(activePatientsList));
 
-            populatePatientDropdown(newId);
-            selectPatient(newId);
+            // Refresh the list and select the new patient
+            filteredPatients = [...activePatientsList];
+            selectPatientFromList(newId);
             hideAddNewPatientForm();
             NativeApp.showToast(`✅ Added ${name}`);
         }
 
+        // ── Save & Return ──
         function saveAndReturn() {
             NativeApp.haptic('success');
             
@@ -424,7 +1005,7 @@
                 const patientIndex = activePatientsList.findIndex(p => p.id === activeSelectedId);
                 if (patientIndex !== -1) {
                     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-                    const score = 5; // mock score
+                    const score = 5;
                     
                     activePatientsList[patientIndex].latestScore = score;
                     activePatientsList[patientIndex].badgeText = "Stable";
@@ -444,7 +1025,7 @@
                     
                     activePatientsList[patientIndex].history.unshift({
                         date: today,
-                        severity: `Moderate (${score}/10)`,
+                        severity: "Moderate",
                         color: "text-amber-600",
                         active: true
                     });
@@ -459,49 +1040,9 @@
             }, 1200);
         }
 
-        // Catch and verify data transfer query strings
-        window.onload = function() {
-            NativeApp.init();
-            
-            // Load patients from storage
-            activePatientsList = getPatients();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const nameParam = urlParams.get('name');
-            
-            let matchedId = null;
-            if (nameParam) {
-                const decodedName = decodeURIComponent(nameParam);
-                const matched = activePatientsList.find(p => p.name.toLowerCase() === decodedName.toLowerCase());
-                if (matched) {
-                    matchedId = matched.id;
-                }
-            }
-            
-            populatePatientDropdown(matchedId);
-            if (matchedId) {
-                selectPatient(matchedId);
-            } else {
-                document.getElementById('patientNameDisplay').innerText = "Select Target Patient";
-                document.getElementById('patientAvatar').innerText = "??";
-            }
-        };
-
-        // Execution Pipeline Trigger Logic
-        document.getElementById('runPipelineBtn').addEventListener('click', () => {
-            if (!activeSelectedId) {
-                NativeApp.haptic('error');
-                NativeApp.showToast('⚠️ Please select a patient first');
-                document.getElementById('patientSelector').focus();
-                return;
-            }
-
-            NativeApp.haptic('medium');
-
-            // Update step indicator
+        // ── Run Analysis ──
+        function runAnalysis() {
             setStep(2);
-
-            // Show loading state
             const loading = document.getElementById('analysisLoading');
             loading.classList.remove('hidden');
             
@@ -509,15 +1050,14 @@
             badge.innerText = "Analyzing...";
             badge.className = "badge-native badge-warning analysis-pulse";
 
-            // Animate progress bar
             const progress = document.getElementById('analysisProgress');
+            progress.style.width = '0%';
             setTimeout(() => progress.style.width = '30%', 200);
             setTimeout(() => progress.style.width = '60%', 500);
             setTimeout(() => progress.style.width = '90%', 800);
             
             setTimeout(() => {
                 progress.style.width = '100%';
-
                 setTimeout(() => {
                     loading.classList.add('hidden');
                     document.getElementById('placeholderScreen').classList.add('hidden');
@@ -530,7 +1070,6 @@
                     NativeApp.haptic('success');
                     NativeApp.staggerIn('#outputPipeline');
 
-                    // Animate gauge
                     const circumference = 2 * Math.PI * 40;
                     const score = 5;
                     const offset = circumference - (score / 10) * circumference;
@@ -539,7 +1078,59 @@
                     }, 300);
                 }, 300);
             }, 1200);
+        }
+
+        // ── Main Run Button ──
+        document.getElementById('runPipelineBtn').addEventListener('click', () => {
+            if (!activeSelectedId) {
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Please select a patient first');
+                document.getElementById('patientSearchInput').focus();
+                return;
+            }
+
+            if (!imageConfirmed || !photoDataURL) {
+                NativeApp.haptic('error');
+                NativeApp.showToast('⚠️ Please capture and confirm a photo first');
+                return;
+            }
+
+            NativeApp.haptic('medium');
+
+            if (checkForWoundChange()) {
+                showWoundConfirmation();
+                return;
+            }
+
+            runAnalysis();
         });
+
+        // ── Click outside to close patient list ──
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('patientListContainer');
+            const searchInput = document.getElementById('patientSearchInput');
+            if (container && !container.contains(e.target) && e.target !== searchInput) {
+                container.classList.add('hidden');
+            }
+        });
+
+        // ── Init ──
+        window.onload = function() {
+            NativeApp.init();
+            activePatientsList = getPatients();
+            filteredPatients = [...activePatientsList];
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name');
+            
+            if (nameParam) {
+                const decodedName = decodeURIComponent(nameParam);
+                const matched = activePatientsList.find(p => p.name.toLowerCase() === decodedName.toLowerCase());
+                if (matched) {
+                    selectPatientFromList(matched.id);
+                }
+            }
+        };
     </script>
 </body>
 </html>
