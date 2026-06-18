@@ -255,7 +255,6 @@
                 <h1 class="app-title">Patch Perfect AI</h1>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="NativeApp.promptInstall()" class="text-white/60 hover:text-white text-xs bg-white/10 px-2.5 py-1.5 rounded-lg font-semibold transition" id="installBtn" style="display:none;">Install App</button>
             </div>
         </div>
     </div>
@@ -343,7 +342,7 @@
                         <div class="flex items-center gap-3">
                             <span class="guideline-icon">🦶</span>
                             <div class="flex-1">
-                                <h3 class="font-bold text-stone-900">Diabetic Foot Ulcer</h3>
+                                <h3 class="font-bold text-stone-900">Diabetic Wound</h3>
                                 <p class="text-sm text-stone-500">Offloading, debridement, and infection control</p>
                             </div>
                             <span class="text-stone-400">›</span>
@@ -378,17 +377,6 @@
                             <div class="flex-1">
                                 <h3 class="font-bold text-stone-900">Venous Ulcer</h3>
                                 <p class="text-sm text-stone-500">Compression therapy, elevation, and wound dressings</p>
-                            </div>
-                            <span class="text-stone-400">›</span>
-                        </div>
-                    </div>
-
-                    <div class="guideline-card" onclick="showGuidelineDetail('burn')">
-                        <div class="flex items-center gap-3">
-                            <span class="guideline-icon">🔥</span>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-stone-900">Burn Injury</h3>
-                                <p class="text-sm text-stone-500">Cooling, dressing, and infection prevention</p>
                             </div>
                             <span class="text-stone-400">›</span>
                         </div>
@@ -520,12 +508,11 @@
 
         // ── Wound data ──
         const defaultWounds = [
-            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Foot Ulcer", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Wound: Diabetic Foot Ulcer · Barangay Health Unit", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
-            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Wound: Surgical Wound · Barangay Health Unit", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
-            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Wound: Pressure Injury · Barangay Health Unit", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
-            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Wound: Venous Ulcer · Barangay Health Unit", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
-            { id: 5, pId: "145", name: "Roberto Diaz", condition: "Burn Injury", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Yesterday", meta: "Wound: Thermal Burn · Barangay Health Unit", latestScore: 8, recText: "Urgent redressing. Monitor systemic signs of local infection.", scores: [5, 6, 8], labels: ['Day 1', 'Day 3', 'Day 6'], history: [{ date: "May 28, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "Jun 01, 2026", severity: "Severe", color: "text-red-700", active: true }] },
-            { id: 6, pId: "201", name: "Sarah Jenkins", condition: "Laceration", badgeText: "New Patient", badgeType: "info", lastChecked: "Never Explored", meta: "Wound: Fresh Laceration Intake · Barangay Health Unit", latestScore: 0, recText: "No diagnostic images uploaded yet. Run first baseline check.", scores: [], labels: [], history: [] }
+            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Wound", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Wound: Diabetic Wound", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Wound: Surgical Wound", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Wound: Pressure Injury", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Wound: Venous Ulcer", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 5, pId: "167", name: "Carlos Mendoza", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "5 Days Ago", meta: "Wound: Surgical Wound", latestScore: 1, recText: "Post-operative wound healing well. Continue standard dressing changes.", scores: [7, 4, 1], labels: ['Day 1', 'Day 5', 'Day 10'], history: [{ date: "Jun 08, 2026", severity: "Severe", color: "text-red-700" }, { date: "Jun 10, 2026", severity: "Mild", color: "text-emerald-600", active: true }] }
         ];
 
         function getWounds() {
@@ -575,7 +562,7 @@
         // ── Guidelines ──
         const guidelineData = {
             diabetic: {
-                title: 'Diabetic Foot Ulcer',
+                title: 'Diabetic Wound',
                 content: `
                     <p class="font-bold text-stone-800">Key Principles:</p>
                     <ul class="list-disc pl-5 space-y-1 mt-1">
@@ -628,20 +615,6 @@
                         <li><strong>Exercise:</strong> Encourage walking and ankle exercises to promote calf muscle pump function.</li>
                     </ul>
                     <p class="text-xs text-stone-400 mt-2">Source: International Union of Angiology (IUA) Guidelines</p>
-                `
-            },
-            burn: {
-                title: 'Burn Injury',
-                content: `
-                    <p class="font-bold text-stone-800">Key Principles:</p>
-                    <ul class="list-disc pl-5 space-y-1 mt-1">
-                        <li><strong>Cooling:</strong> Run cool (not cold) water over the burn for 10-15 minutes to reduce heat and pain.</li>
-                        <li><strong>Dressing:</strong> Apply sterile, non-adherent dressings; change twice daily or when saturated.</li>
-                        <li><strong>Infection Prevention:</strong> Monitor for systemic signs (fever, chills); consider topical antimicrobials (e.g., silver sulfadiazine).</li>
-                        <li><strong>Pain Management:</strong> Administer analgesics before dressing changes.</li>
-                        <li><strong>Nutrition:</strong> Increase protein and calorie intake significantly (2-3x normal) for wound healing.</li>
-                    </ul>
-                    <p class="text-xs text-stone-400 mt-2">Source: American Burn Association (ABA) Guidelines</p>
                 `
             }
         };
@@ -860,7 +833,7 @@
                 badgeText: 'New',
                 badgeType: 'info',
                 lastChecked: 'Just now',
-                meta: `Wound: New · Barangay Health Unit`,
+                meta: `Wound: New`,
                 latestScore: 0,
                 recText: 'No scans yet. Tap "Scan Wound" to begin assessment.',
                 scores: [],
@@ -906,6 +879,13 @@
 
             renderWoundGrid();
             document.getElementById('view-guidelines').classList.add('view-hidden');
+
+            // Check for tab parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab === 'guidelines') {
+                switchTab('guidelines');
+            }
         };
     </script>
 </body>
