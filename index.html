@@ -243,6 +243,16 @@
         .label-severe { color: #dc2626; }
         .label-critical { color: #991b1b; }
         .label-none { color: #78716c; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans pb-24">
@@ -454,31 +464,81 @@
         </div>
     </div>
 
-    <!-- ═══════ MODAL: CREATE NEW WOUND PROFILE ═══════ -->
+    <!-- ═══════ MODAL: CREATE NEW WOUND PROFILE (COMPREHENSIVE) ═══════ -->
     <div class="modal-overlay" id="createModal">
         <div class="modal-card">
             <div class="modal-handle"></div>
-            <h2 class="text-xl font-extrabold text-stone-900 mb-1">New Wound Profile</h2>
-            <p class="modal-subtitle">Enter the patient's name to get started</p>
+            <h2 class="text-xl font-extrabold text-stone-900 mb-1">New Patient Profile</h2>
+            <p class="modal-subtitle">Enter comprehensive patient details for wound tracking</p>
 
             <form id="createWoundForm" onsubmit="handleCreateWound(event)">
-                <div class="space-y-5">
-                    <div>
-                        <label class="form-label">Patient Full Name</label>
-                        <input type="text" id="newName" class="form-input" placeholder="e.g. Ana Reyes" required autofocus>
-                    </div>
-                    <div class="flex gap-3 pt-2">
-                        <button type="button" onclick="closeCreateModal()" class="btn-secondary">Cancel</button>
-                        <button type="submit" class="btn-primary">Create Profile</button>
-                    </div>
-                </div>
-            </form>
+    <div class="space-y-4">
+        <!-- Full Name -->
+        <div>
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="newName" class="form-input" placeholder="e.g. Ana Reyes" required autofocus>
+        </div>
+
+        <!-- Age & Gender -->
+        <div class="form-row">
+            <div>
+                <label class="form-label">Age *</label>
+                <input type="number" id="newAge" class="form-input" placeholder="45" min="0" max="120" required>
+            </div>
+            <div>
+                <label class="form-label">Gender *</label>
+                <select id="newGender" class="form-input" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+            <label class="form-label">Address *</label>
+            <input type="text" id="newAddress" class="form-input" placeholder="123 Main St, City, State, ZIP" required>
+        </div>
+
+        <!-- Contact & Emergency -->
+        <div class="form-row">
+            <div>
+                <label class="form-label">Phone</label>
+                <input type="tel" id="newPhone" class="form-input" placeholder="(555) 123-4567">
+            </div>
+            <div>
+                <label class="form-label">Emergency Contact</label>
+                <input type="text" id="newEmergency" class="form-input" placeholder="Name & phone">
+            </div>
+        </div>
+
+        <!-- Notes (replaced Medical History dropdown) -->
+        <div>
+            <label class="form-label">Notes</label>
+            <textarea id="newNotes" class="form-input" rows="3" placeholder="Medical history, observations, or any relevant notes..."></textarea>
+        </div>
+
+        <!-- Allergies -->
+        <div>
+            <label class="form-label">Allergies</label>
+            <input type="text" id="newAllergies" class="form-input" placeholder="e.g. Penicillin, Latex">
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="button" onclick="closeCreateModal()" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Create Profile</button>
+        </div>
+    </div>
+</form>
         </div>
     </div>
 
     <script src="native-app.js"></script>
     <script>
-        // ── Helper: Single-word Severity Label ──
+        // ── Helper: Severity Label ──
         function getSeverityLabel(score) {
             if (score === 0) return 'None';
             if (score <= 2) return 'Mild';
@@ -506,13 +566,13 @@
             return 'label-critical';
         }
 
-        // ── Wound data ──
+        // ── Default Wounds (with expanded patient data) ──
         const defaultWounds = [
-            { id: 1, pId: "089", name: "Alken Valledor", condition: "Diabetic Wound", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Wound: Diabetic Wound", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
-            { id: 2, pId: "112", name: "Maria Santos", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Wound: Surgical Wound", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
-            { id: 3, pId: "054", name: "Juan Dela Cruz", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Wound: Pressure Injury", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
-            { id: 4, pId: "022", name: "Elena Ramos", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Wound: Venous Ulcer", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
-            { id: 5, pId: "167", name: "Carlos Mendoza", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "5 Days Ago", meta: "Wound: Surgical Wound", latestScore: 1, recText: "Post-operative wound healing well. Continue standard dressing changes.", scores: [7, 4, 1], labels: ['Day 1', 'Day 5', 'Day 10'], history: [{ date: "Jun 08, 2026", severity: "Severe", color: "text-red-700" }, { date: "Jun 10, 2026", severity: "Mild", color: "text-emerald-600", active: true }] }
+            { id: 1, pId: "089", name: "Alken Valledor", age: 58, gender: "Male", address: "12 Oak St, San Diego, CA 92101", phone: "(619) 555-1234", emergency: "Marie Valledor (619) 555-5678", allergies: "Sulfa", condition: "Diabetic Wound", badgeText: "Action Needed", badgeType: "danger", lastChecked: "Today", meta: "Wound: Diabetic Wound", latestScore: 5, recText: "Daily monitoring advised. Clean the build-up carefully.", scores: [7, 5, 3, 5], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Mild", color: "text-emerald-600" }, { date: "Jun 02, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 2, pId: "112", name: "Maria Santos", age: 72, gender: "Female", address: "45 Pine Ave, Los Angeles, CA 90012", phone: "(213) 555-9876", emergency: "Jose Santos (213) 555-4321", allergies: "None", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "3 Days Ago", meta: "Wound: Surgical Wound", latestScore: 2, recText: "Keep wound area clean and dry. Standard weekly follow-up.", scores: [8, 6, 4, 2], labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15'], history: [{ date: "May 15, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 20, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 25, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 30, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 3, pId: "054", name: "Juan Dela Cruz", age: 65, gender: "Male", address: "78 Elm St, San Francisco, CA 94105", phone: "(415) 555-7890", emergency: "Lisa Dela Cruz (415) 555-4567", allergies: "Penicillin", condition: "Pressure Injury", badgeText: "Improving", badgeType: "success", lastChecked: "1 Week Ago", meta: "Wound: Pressure Injury", latestScore: 4, recText: "Continue scheduled turning hours. Apply fresh clean dressing.", scores: [9, 8, 6, 4], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 05, 2026", severity: "Critical", color: "text-red-900" }, { date: "May 12, 2026", severity: "Severe", color: "text-red-700" }, { date: "May 19, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 26, 2026", severity: "Moderate", color: "text-amber-600", active: true }] },
+            { id: 4, pId: "022", name: "Elena Ramos", age: 48, gender: "Female", address: "234 Cedar Ln, Sacramento, CA 95814", phone: "(916) 555-2345", emergency: "Carlos Ramos (916) 555-6789", allergies: "Latex", condition: "Venous Ulcer", badgeText: "Stable", badgeType: "success", lastChecked: "2 Days Ago", meta: "Wound: Venous Ulcer", latestScore: 3, recText: "Elevate lower extremities. Compression therapy compliant.", scores: [6, 5, 4, 3], labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], history: [{ date: "May 10, 2026", severity: "Moderate", color: "text-amber-600" }, { date: "May 24, 2026", severity: "Mild", color: "text-emerald-600", active: true }] },
+            { id: 5, pId: "167", name: "Carlos Mendoza", age: 55, gender: "Male", address: "567 Maple Dr, Fresno, CA 93720", phone: "(559) 555-8901", emergency: "Rosa Mendoza (559) 555-3456", allergies: "Codeine", condition: "Surgical Wound", badgeText: "Stable", badgeType: "success", lastChecked: "5 Days Ago", meta: "Wound: Surgical Wound", latestScore: 1, recText: "Post-operative wound healing well. Continue standard dressing changes.", scores: [7, 4, 1], labels: ['Day 1', 'Day 5', 'Day 10'], history: [{ date: "Jun 08, 2026", severity: "Severe", color: "text-red-700" }, { date: "Jun 10, 2026", severity: "Mild", color: "text-emerald-600", active: true }] }
         ];
 
         function getWounds() {
@@ -655,6 +715,7 @@
                 const card = document.createElement('div');
                 card.className = `native-card cursor-pointer p-4 transition ${wound.id === activeSelectedId ? 'selected' : ''}`;
                 card.setAttribute('onclick', `selectWound(${wound.id})`);
+                // Show age and condition in the card for richer info
                 card.innerHTML = `
                     <div class="flex items-start gap-3">
                         <div class="patient-avatar flex-shrink-0">${getInitials(wound.name)}</div>
@@ -663,7 +724,7 @@
                                 <h3 class="font-bold text-stone-900 text-[15px] truncate">${wound.name}</h3>
                                 <span class="text-[10px] text-stone-400 font-semibold flex-shrink-0">#${wound.pId}</span>
                             </div>
-                            <p class="text-xs text-stone-500 mt-0.5">${wound.condition}</p>
+                            <p class="text-xs text-stone-500 mt-0.5">${wound.condition} · ${wound.age} yrs</p>
                             <div class="flex items-center justify-between mt-2.5">
                                 <span class="badge-native ${badgeClasses[wound.badgeType] || 'badge-info'}">${wound.badgeText}</span>
                                 <span class="text-[10px] text-stone-400 font-medium">${wound.lastChecked}</span>
@@ -706,7 +767,7 @@
         // ── Bottom Sheet ──
         function openWoundSheet(data) {
             document.getElementById('sheet-wound-name').innerText = `${data.name}'s Wound`;
-            document.getElementById('sheet-wound-meta').innerText = data.meta;
+            document.getElementById('sheet-wound-meta').innerText = `${data.condition} · ${data.age} yrs · ${data.address}`;
 
             const gaugeWrap = document.getElementById('sheet-gauge-wrap');
             const timeline = document.getElementById('sheet-timeline');
@@ -742,7 +803,6 @@
                 data.history.forEach((entry) => {
                     const item = document.createElement('div');
                     item.className = `timeline-item ${entry.active ? 'active' : ''} pb-3`;
-                    // entry.severity is already the single-word label
                     item.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div>
@@ -802,7 +862,7 @@
             window.location.href = `analysis.html${nameParam}`;
         }
 
-        // ── MODAL: Create New Wound ──
+        // ── MODAL: Create New Wound (Comprehensive) ──
         function openCreateModal() {
             document.getElementById('createModal').classList.add('open');
             setTimeout(() => document.getElementById('newName').focus(), 300);
@@ -815,9 +875,16 @@
         function handleCreateWound(e) {
             e.preventDefault();
             const name = document.getElementById('newName').value.trim();
+            const age = document.getElementById('newAge').value.trim();
+            const gender = document.getElementById('newGender').value;
+            const address = document.getElementById('newAddress').value.trim();
+            const phone = document.getElementById('newPhone').value.trim();
+            const emergency = document.getElementById('newEmergency').value.trim();
+            const condition = document.getElementById('newCondition').value;
+            const allergies = document.getElementById('newAllergies').value.trim();
 
-            if (!name) {
-                NativeApp.showToast('⚠️ Please enter a patient name');
+            if (!name || !age || !gender || !address) {
+                NativeApp.showToast('⚠️ Please fill in all required fields (*)');
                 return;
             }
 
@@ -829,11 +896,17 @@
                 id: newId,
                 pId: pId,
                 name: name,
-                condition: 'New Wound',
+                age: parseInt(age),
+                gender: gender,
+                address: address,
+                phone: phone || 'N/A',
+                emergency: emergency || 'N/A',
+                allergies: allergies || 'None',
+                condition: condition,
                 badgeText: 'New',
                 badgeType: 'info',
                 lastChecked: 'Just now',
-                meta: `Wound: New`,
+                meta: `Wound: ${condition}`,
                 latestScore: 0,
                 recText: 'No scans yet. Tap "Scan Wound" to begin assessment.',
                 scores: [],
